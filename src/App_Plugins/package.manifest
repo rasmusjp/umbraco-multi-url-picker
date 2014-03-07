@@ -1,0 +1,20 @@
+﻿{
+   propertyEditors: [{ 
+       alias: "RJP.MultiUrlPicker"
+     , name:  "Multi Url Picker"
+     , editor: {
+          view: "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.html"
+       }
+     , prevalues: {
+          fields: [{
+                 label: "Pick multiple items"
+               , key: "multiPicker"
+               , view: "boolean"
+             }
+          ]
+      }
+   }]
+ , javascript: [
+     '~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.js'
+   ] 
+}
