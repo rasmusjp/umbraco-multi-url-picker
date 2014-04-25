@@ -3,7 +3,8 @@
        alias: "RJP.MultiUrlPicker"
      , name:  "Multi Url Picker"
      , editor: {
-          view: "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.html"
+           view: "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.html"
+         , valueType: "JSON"
        }
      , prevalues: {
           fields: [{
