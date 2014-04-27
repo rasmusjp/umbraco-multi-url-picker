@@ -1,0 +1,45 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+
+@using System.Net.Mime
+@using Newtonsoft.Json.Linq
+@using RJP.MultiUrlPicker.Models
+@using Umbraco.Web
+
+@{
+    Layout = "PropertyEditorLayout.cshtml";
+}
+@section BodySection {
+
+    <h2>Typed</h2>  
+    @{
+        var multiUrlPicker = Model.Content.GetPropertyValue<MultiUrls>("multiUrlPicker");
+
+        if (multiUrlPicker.Any())
+        {
+            <ul>
+                @foreach (var item in multiUrlPicker)
+                {
+                    <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+                }
+            </ul>
+        }
+    }
+   
+    <h2>Dynamic</h2>
+
+@{
+    var multiUrlPickerDyn = CurrentPage.multiUrlPicker;
+
+    if (multiUrlPickerDyn.Any())
+    {
+        <ul>
+            @foreach (var item in multiUrlPickerDyn)
+            {
+                <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+            }
+        </ul>
+    }
+}   
+    
+
+}
