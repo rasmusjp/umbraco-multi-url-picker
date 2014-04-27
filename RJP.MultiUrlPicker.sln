@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite", "TestSite\TestSite.csproj", "{435CB5B1-AA14-4EE9-996F-A8A6C79CF8F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{3DAD6623-692A-4509-BF93-BA2FF09B2A82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App_Plugins", "App_Plugins", "{B10DB1E8-1DA1-4BEE-A522-F5F76C051784}"
+	ProjectSection(SolutionItems) = preProject
+		src\App_Plugins\MultiUrlPicker.html = src\App_Plugins\MultiUrlPicker.html
+		src\App_Plugins\MultiUrlPicker.js = src\App_Plugins\MultiUrlPicker.js
+		src\App_Plugins\package.manifest = src\App_Plugins\package.manifest
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJP.MultiUrlPicker", "RJP.MultiUrlPicker\RJP.MultiUrlPicker.csproj", "{2553C499-3593-43ED-95D6-39B03CC61ED1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{435CB5B1-AA14-4EE9-996F-A8A6C79CF8F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{435CB5B1-AA14-4EE9-996F-A8A6C79CF8F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{435CB5B1-AA14-4EE9-996F-A8A6C79CF8F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{435CB5B1-AA14-4EE9-996F-A8A6C79CF8F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B10DB1E8-1DA1-4BEE-A522-F5F76C051784} = {3DAD6623-692A-4509-BF93-BA2FF09B2A82}
+	EndGlobalSection
+EndGlobal
