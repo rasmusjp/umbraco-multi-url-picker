@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RJP.MultiUrlPicker.Models;
-using Umbraco.Core;
-using Umbraco.Core.Models.PublishedContent;
+﻿using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Web;
+
+using RJP.MultiUrlPicker.Models;
 
 namespace RJP.MultiUrlPicker
 {
