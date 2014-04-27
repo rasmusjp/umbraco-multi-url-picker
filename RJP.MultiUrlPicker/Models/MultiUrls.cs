@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using Umbraco.Core.Logging;
 
 namespace RJP.MultiUrlPicker.Models
@@ -31,7 +30,7 @@ namespace RJP.MultiUrlPicker.Models
                     else
                     {
                         LogHelper.Warn<MultiUrls>(
-                            string.Format("MultiUrlPicker value converter skipped a link as the node is deleted (Id: {0}), ", newLink.Id));
+                            string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
                     }
                 }
             }

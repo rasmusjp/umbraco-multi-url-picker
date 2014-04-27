@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+
 using umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Web;
@@ -25,14 +21,26 @@ namespace RJP.MultiUrlPicker.Models
             _linkItem = linkItem;
         }
 
-        private IPublishedContent ContentItem
+        private IPublishedContent PublishedItem
         {
             get
             {
-                if (this.Id == null) return null;
+                if (Id == null) return null;
                 if (UmbracoContext.Current == null) return null;
                 var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-                return umbHelper.TypedContent((int)this.Id);
+
+                var id = (int)Id;
+                var objType = uQuery.GetUmbracoObjectType(id);
+
+                if  (objType == uQuery.UmbracoObjectType.Document)
+                {
+                    return umbHelper.TypedContent(id);
+                }
+                if (objType == uQuery.UmbracoObjectType.Media)
+                {
+                    return umbHelper.TypedMedia(id);
+                }
+                return null;
             }
         }
 
@@ -67,9 +75,9 @@ namespace RJP.MultiUrlPicker.Models
             {
                 if (_deleted == null)
                 {
-                    if (this.Id != null)
+                    if (Id != null)
                     {
-                        _deleted = ContentItem == null;
+                        _deleted = PublishedItem == null;
                     }
                     else
                     {
@@ -86,14 +94,7 @@ namespace RJP.MultiUrlPicker.Models
             {
                 if (string.IsNullOrEmpty(_url))
                 {
-                    if (this.ContentItem != null)
-                    {
-                        _url = ContentItem.Url;
-                    }
-                    else
-                    {
-                        _url = _linkItem.Value<string>("url");
-                    }
+                    _url = PublishedItem != null ? PublishedItem.Url : _linkItem.Value<string>("url");
                 }
                 return _url;
             }
