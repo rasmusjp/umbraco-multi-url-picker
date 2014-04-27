@@ -170,6 +170,7 @@ TestSite/App_Data/ClientDependency/
 TestSite/App_Data/TEMP/ExamineIndexes/
 TestSite/App_Data/TEMP/PluginCache/*
 TestSite/App_Data/TEMP/SEOChecker/
+TestSite/App_Data/TEMP/FileUploads/
 TestSite/App_Data/Logs/*
 TestSite/App_Data/TEMP/Razor/
 TestSite/App_Data/FeedCache/
