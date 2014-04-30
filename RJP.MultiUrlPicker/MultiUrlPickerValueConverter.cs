@@ -8,7 +8,7 @@ namespace RJP.MultiUrlPicker
 {
     [PropertyValueType(typeof(MultiUrls))]
     [PropertyValueCache(PropertyCacheValue.All, PropertyCacheLevel.Content)]
-    public class MultiUrlPickerValueConveter : PropertyValueConverterBase
+    public class MultiUrlPickerValueConverter : PropertyValueConverterBase
     {
         public override bool IsConverter(PublishedPropertyType propertyType)
         {
