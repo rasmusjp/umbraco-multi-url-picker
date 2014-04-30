@@ -8,9 +8,10 @@ using Umbraco.Core.Logging;
 
 namespace RJP.MultiUrlPicker.Models
 {
-    public class MultiUrls : List<Link>
+    public class MultiUrls : IEnumerable<Link>
     {
         private readonly string _propertyData;
+        private readonly List<Link> _multiUrls = new List<Link>(); 
 
         public MultiUrls(string propertyData)
         {
@@ -19,13 +20,12 @@ namespace RJP.MultiUrlPicker.Models
             if (!string.IsNullOrEmpty(propertyData))
             {
                 var relatedLinks = JsonConvert.DeserializeObject<JArray>(propertyData);
-
                 foreach (var item in relatedLinks)
                 {
                     var newLink = new Link(item);
                     if (!newLink.Deleted)
                     {
-                        this.Add(new Link(item));
+                        _multiUrls.Add(new Link(item));
                     }
                     else
                     {
@@ -44,9 +44,20 @@ namespace RJP.MultiUrlPicker.Models
             }
         }
 
+        // Although this method seems unnecessary it makes .Any() available in Dynamics
         public bool Any()
         {
             return Enumerable.Any(this);          
+        }
+
+        public IEnumerator<Link> GetEnumerator()
+        {
+            return _multiUrls.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
