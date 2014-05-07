@@ -13,25 +13,40 @@ Install the NuGet [package](https://www.nuget.org/packages/RJP.UmbracoMultiUrlPi
 
 Create a new Data Type and select the "Multi Url Picker" property editor.
 
-Example view:
+### Typed
+
+Add a reference to RJP.MultiUrlPicker.dll in your project
 
 ```
-@using Newtonsoft.Json
-@inherits UmbracoTemplatePage
 @{
-  dynamic links = JsonConvert.DeserializeObject(Model.Content.GetPropertyValue<string>("links"));
-}
-
-<ul>
-  @foreach (var link in links) {
-    var url = link.url;
-    // resolve the url if the link is internal
-    if (link.id != null) {
-      url = Umbraco.NiceUrl((int)link.id);
-    }
-    <li>
-      <a href="@url" title="@link.name" target="@link.target">@link.name</a>
-    </li>
+  var multiUrlPicker = Model.Content.GetPropertyValue<MultiUrls>("multiUrlPicker");
+  if (multiUrlPicker.Any())
+  {
+    <ul>
+      @foreach (var item in multiUrlPicker)
+      {
+        <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+      }
+    </ul>
   }
-</ul>
+}
 ```
+
+### Dynamic
+```
+@{
+  var multiUrlPickerDyn = CurrentPage.multiUrlPicker;
+  if (multiUrlPickerDyn.Any())
+  {
+    <ul>
+      @foreach (var item in multiUrlPickerDyn)
+      {
+        <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+      }
+    </ul>
+  }
+}
+```
+
+## Changelog
+See the [changelog here](CHANGELOG)

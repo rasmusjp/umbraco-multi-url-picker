@@ -1,0 +1,14 @@
+0.2.0
+=====
+
+  * added property value converter
+
+0.1.1
+=====
+
+  * data is now stored in the ntext column
+
+0.1.0
+=====
+
+  * initial release
