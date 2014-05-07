@@ -95,8 +95,8 @@ publish/
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
 packages/
 
-!TestSite/App_Data/packages
-!TestSite/Umbraco/Developer/Packages
+!src/TestSite/App_Data/packages
+!src/TestSite/Umbraco/Developer/Packages
 
 # Windows Azure Build Output
 csx
@@ -157,33 +157,33 @@ $RECYCLE.BIN/
 # =========================
 # Bin folders
 # =========================
-TestSite/[Bb]in/*
-RJP.MultiUrlPicker/[Bb]in/*
+src/TestSite/[Bb]in/*
+src/RJP.MultiUrlPicker/[Bb]in/*
 
 # =========================
 # Umbraco
 # =========================
-TestSite/App_Data/umbraco.config
-TestSite/App_Data/preview/*.config
-TestSite/App_Data/TEMP/ClientDependency/
-TestSite/App_Data/ClientDependency/
-TestSite/App_Data/TEMP/ExamineIndexes/
-TestSite/App_Data/TEMP/PluginCache/*
-TestSite/App_Data/TEMP/SEOChecker/
-TestSite/App_Data/TEMP/FileUploads/
-TestSite/App_Data/Logs/*
-TestSite/App_Data/TEMP/Razor/
-TestSite/App_Data/FeedCache/
-TestSite/App_Data/courier/revisions/
-TestSite/App_Data/courier/cache/*
-TestSite/App_Data/umbraco.licensing.log.txt
-TestSite/aspnet_client/
-TestSite/App_Data/*.udt
+src/TestSite/App_Data/umbraco.config
+src/TestSite/App_Data/preview/*.config
+src/TestSite/App_Data/TEMP/ClientDependency/
+src/TestSite/App_Data/ClientDependency/
+src/TestSite/App_Data/TEMP/ExamineIndexes/
+src/TestSite/App_Data/TEMP/PluginCache/*
+src/TestSite/App_Data/TEMP/SEOChecker/
+src/TestSite/App_Data/TEMP/FileUploads/
+src/TestSite/App_Data/Logs/*
+src/TestSite/App_Data/TEMP/Razor/
+src/TestSite/App_Data/FeedCache/
+src/TestSite/App_Data/courier/revisions/
+src/TestSite/App_Data/courier/cache/*
+src/TestSite/App_Data/umbraco.licensing.log.txt
+src/TestSite/aspnet_client/
+src/TestSite/App_Data/*.udt
 # =========================
 # ImageProcessor Cache 
 # =========================
-TestSite/App_Data/Cache/*
+src/TestSite/App_Data/Cache/*
 # =========================
 # MultiUrlPicker Specific
 # =========================
-TestSite/App_Plugins/RJP.MultiUrlPicker/*
+src/TestSite/App_Plugins/RJP.MultiUrlPicker/*
