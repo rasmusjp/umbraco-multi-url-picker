@@ -1,5 +1,5 @@
-/*! umbraco - v7.0.0-Beta - 2014-04-08
- * https://github.com/umbraco/umbraco-cms/tree/7.0.0
+/*! umbraco - v7.1.2 - 2014-05-09
+ * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
  */
@@ -2078,7 +2078,7 @@ function mediaTypeResource($q, $http, umbRequestHelper) {
                        "mediaTypeApiBaseUrl",
                        "GetAllowedChildren",
                        [{ contentId: mediaId }])),
-               'Failed to retrieve data for media id ' + mediaId);
+               'Failed to retrieve allowed types for media id ' + mediaId);
         }
 
     };

@@ -1,5 +1,5 @@
-/*! umbraco - v7.0.0-Beta - 2014-04-08
- * https://github.com/umbraco/umbraco-cms/tree/7.0.0
+/*! umbraco - v7.1.2 - 2014-05-09
+ * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
  */
@@ -508,14 +508,24 @@ angular.module('umbraco.services')
             return url;
         }
 
-        var rnd = Umbraco.Sys.ServerVariables.isDebuggingEnabled ?  (new Date()).getTime() : Umbraco.Sys.ServerVariables.application.version +"."+Umbraco.Sys.ServerVariables.application.cdf;
+        var rnd = Umbraco.Sys.ServerVariables.application.version +"."+Umbraco.Sys.ServerVariables.application.cdf;
         var _op = (url.indexOf("?")>0) ? "&" : "?";
         url = url + _op + "umb__rnd=" + rnd;
         return url;
     };
 
-    return {
+    var service = {
+        loadedAssets:{},
         
+        _getAssetPromise : function(path){
+            if(this.loadedAssets[path]){
+                return this.loadedAssets[path];
+            }else{
+                var deferred = $q.defer();
+                this.loadedAssets[path] = {deferred: deferred, state: "new", path: path};
+                return this.loadedAssets[path];
+            }
+        },
         /** 
             Internal method. This is called when the application is loading and the user is already authenticated, or once the user is authenticated.
             There's a few assets the need to be loaded for the application to function but these assets require authentication to load.
@@ -555,21 +565,27 @@ angular.module('umbraco.services')
          * @returns {Promise} Promise object which resolves when the file has loaded
          */
          loadCss : function(path, scope, attributes, timeout){
-             var deferred = $q.defer();
+             var asset = this._getAssetPromise(path); // $q.defer();
              var t = timeout || 5000;
              var a = attributes || undefined;
-
-             yepnope.injectCss(appendRnd(path), function () {
-                 if (!scope) {
-                      deferred.resolve(true);
-                  }else{
-                      angularHelper.safeApply(scope, function () {
-                          deferred.resolve(true);
-                      });
-                  }
-             },a,t);
-
-             return deferred.promise;
+             
+             if(asset.state === "new"){
+                 asset.state = "loading";
+                 LazyLoad.css(appendRnd(path), function () {
+                   if (!scope) {
+                       asset.state = "loaded";  
+                       asset.deferred.resolve(true);
+                   }else{
+                       asset.state = "loaded";    
+                       angularHelper.safeApply(scope, function () {
+                           asset.deferred.resolve(true);
+                       });
+                   }
+                 });    
+             }else if(asset.state === "loaded"){
+                 asset.deferred.resolve(true);
+             }
+             return asset.deferred.promise;
          },
         
         /**
@@ -587,22 +603,31 @@ angular.module('umbraco.services')
          * @returns {Promise} Promise object which resolves when the file has loaded
          */
         loadJs : function(path, scope, attributes, timeout){
-            var deferred = $q.defer();
+            
+            var asset = this._getAssetPromise(path); // $q.defer();
             var t = timeout || 5000;
             var a = attributes || undefined;
             
-            yepnope.injectJs(appendRnd(path), function () {
-              if (!scope) {
-                  deferred.resolve(true);
-              }else{
-                  angularHelper.safeApply(scope, function () {
-                      deferred.resolve(true);
-                  });
-              }
-            },a,t);
+            if(asset.state === "new"){
+                asset.state = "loading";
 
+                LazyLoad.js(appendRnd(path), function () {
+                  if (!scope) {
+                      asset.state = "loaded";  
+                      asset.deferred.resolve(true);
+                  }else{
+                      asset.state = "loaded";  
+                      angularHelper.safeApply(scope, function () {
+                          asset.deferred.resolve(true);
+                      });
+                  }
+                });
 
-            return deferred.promise;
+            }else if(asset.state === "loaded"){
+                asset.deferred.resolve(true);
+            }
+
+            return asset.deferred.promise;
         },
 
         /**
@@ -620,8 +645,12 @@ angular.module('umbraco.services')
          * @returns {Promise} Promise object which resolves when all the files has loaded
          */
         load: function (pathArray, scope) {
-            var deferred = $q.defer();
-        
+            var promise;
+
+            if (!angular.isArray(pathArray)) {
+                throw "pathArray must be an array";
+            }
+
             var nonEmpty = _.reject(pathArray, function(item) {
                 return item === undefined || item === "";
             });
@@ -629,38 +658,57 @@ angular.module('umbraco.services')
 
             //don't load anything if there's nothing to load
             if (nonEmpty.length > 0) {
-                yepnope({
-                    load: pathArray,
-                    complete: function() {
+                var promises = [];
+                var assets = [];
 
-                        //if a scope is supplied then we need to make a digest here because
-                        // deferred only executes in a digest. This might be required if we 
-                        // are doing a load script after an http request or some other async call.
-                        if (!scope) {
-                            deferred.resolve(true);
+                //compile a list of promises
+                //blocking
+                _.each(nonEmpty, function(path){
+                    var asset = service._getAssetPromise(path);
+                    //if not previously loaded, add to list of promises
+                    if(asset.state !== "loaded")
+                    {
+                        if(asset.state === "new"){
+                            asset.state = "loading";
+                            assets.push(asset);
                         }
-                        else {
-                            angularHelper.safeApply(scope, function () {
-                                deferred.resolve(true);
-                            });
-                        }
+
+                        //we need to always push to the promises collection to monitor correct 
+                        //execution                        
+                        promises.push(asset.deferred.promise);
                     }
                 });
-            }
-            else {
-                if (!scope) {
-                    deferred.resolve(true);
-                }
-                else {
-                    angularHelper.safeApply(scope, function () {
-                        deferred.resolve(true);
-                    });
-                }
+
+
+                //gives a central monitoring of all assets to load
+                promise = $q.all(promises);
+                
+                _.each(assets, function(asset){
+                    LazyLoad.js(appendRnd(asset.path), function () {
+                      if (!scope) {
+                          asset.state = "loaded";  
+                          asset.deferred.resolve(true);
+                      }else{
+                          asset.state = "loaded";    
+                          angularHelper.safeApply(scope, function () {
+                              asset.deferred.resolve(true);
+                          });
+                      }
+                    });    
+                });
+            }else{
+                //return and resolve
+                var deferred = $q.defer();
+                promise = deferred.promise;
+                deferred.resolve(true);
             }
 
-            return deferred.promise;
+
+            return promise;
         }
     };
+
+    return service;
 });
 
 /**
@@ -1685,7 +1733,8 @@ function eventsService($q, $rootScope) {
 
             //there are no listeners
             if (!$rootScope.$$listeners[name]) {
-                return [];
+                return;
+                //return [];
             }
 
             //send the event
@@ -3159,30 +3208,79 @@ function mediaHelper(umbRequestHelper) {
             _mediaFileResolvers[propertyEditorAlias] = func;
         },
 
+        /**
+         * @ngdoc function
+         * @name umbraco.services.mediaHelper#resolveFileFromEntity
+         * @methodOf umbraco.services.mediaHelper
+         * @function    
+         *
+         * @description
+         * Gets the media file url for a media entity returned with the entityResource
+         * 
+         * @param {object} mediaEntity A media Entity returned from the entityResource
+         * @param {boolean} thumbnail Whether to return the thumbnail url or normal url
+         */
+        resolveFileFromEntity : function(mediaEntity, thumbnail) {
+            
+            if (!angular.isObject(mediaEntity.metaData)) {
+                throw "Cannot resolve the file url from the mediaEntity, it does not contain the required metaData";
+            }
+
+            var values = _.values(mediaEntity.metaData);
+            for (var i = 0; i < values.length; i++) {
+                var val = values[i];
+                if (angular.isObject(val) && val.PropertyEditorAlias) {
+                    for (var resolver in _mediaFileResolvers) {
+                        if (val.PropertyEditorAlias === resolver) {
+                            //we need to format a property variable that coincides with how the property would be structured
+                            // if it came from the mediaResource just to keep things slightly easier for the file resolvers.
+                            var property = { value: val.Value };
+
+                            return _mediaFileResolvers[resolver](property, mediaEntity, thumbnail);
+                        }
+                    }
+                }
+            }
+
+            return "";
+        },
+
+        /**
+         * @ngdoc function
+         * @name umbraco.services.mediaHelper#resolveFile
+         * @methodOf umbraco.services.mediaHelper
+         * @function    
+         *
+         * @description
+         * Gets the media file url for a media object returned with the mediaResource
+         * 
+         * @param {object} mediaEntity A media Entity returned from the entityResource
+         * @param {boolean} thumbnail Whether to return the thumbnail url or normal url
+         */
         /*jshint loopfunc: true */
         resolveFile : function(mediaItem, thumbnail){
-            var _props = [];
-            function _iterateProps(props){
-                var result = null;
+            
+            function iterateProps(props){
+                var res = null;
                 for(var resolver in _mediaFileResolvers) {
-                    var property = _.find(props, function(property){ return property.editor === resolver; });
+                    var property = _.find(props, function(prop){ return prop.editor === resolver; });
                     if(property){
-                        result = _mediaFileResolvers[resolver](property, mediaItem, thumbnail);
+                        res = _mediaFileResolvers[resolver](property, mediaItem, thumbnail);
                         break;
                     }
                 }
 
-                return result;    
+                return res;    
             }
 
             //we either have properties raw on the object, or spread out on tabs
             var result = "";
             if(mediaItem.properties){
-                result = _iterateProps(mediaItem.properties);
+                result = iterateProps(mediaItem.properties);
             }else if(mediaItem.tabs){
                 for(var tab in mediaItem.tabs) {
                     if(mediaItem.tabs[tab].properties){
-                        result = _iterateProps(mediaItem.tabs[tab].properties);
+                        result = iterateProps(mediaItem.tabs[tab].properties);
                         if(result){
                             break;
                         }
@@ -3194,26 +3292,26 @@ function mediaHelper(umbRequestHelper) {
 
         /*jshint loopfunc: true */
         hasFilePropertyType : function(mediaItem){
-           function _iterateProps(props){
-               var result = false;
+           function iterateProps(props){
+               var res = false;
                for(var resolver in _mediaFileResolvers) {
-                   var property = _.find(props, function(property){ return property.editor === resolver; });
+                   var property = _.find(props, function(prop){ return prop.editor === resolver; });
                    if(property){
-                       result = true;
+                       res = true;
                        break;
                    }
                }
-               return result;
+               return res;
            }
 
            //we either have properties raw on the object, or spread out on tabs
            var result = false;
            if(mediaItem.properties){
-               result = _iterateProps(mediaItem.properties);
+               result = iterateProps(mediaItem.properties);
            }else if(mediaItem.tabs){
                for(var tab in mediaItem.tabs) {
                    if(mediaItem.tabs[tab].properties){
-                       result = _iterateProps(mediaItem.tabs[tab].properties);
+                       result = iterateProps(mediaItem.tabs[tab].properties);
                        if(result){
                            break;
                        }
@@ -6592,262 +6690,255 @@ function umbRequestHelper($http, $q, umbDataFormatter, angularHelper, dialogServ
 }
 angular.module('umbraco.services').factory('umbRequestHelper', umbRequestHelper);
 angular.module('umbraco.services')
-.factory('userService', function ($rootScope, eventsService, $q, $location, $log, securityRetryQueue, authResource, dialogService, $timeout, angularHelper) {
+    .factory('userService', function ($rootScope, eventsService, $q, $location, $log, securityRetryQueue, authResource, dialogService, $timeout, angularHelper) {
 
-    var currentUser = null;
-    var lastUserId = null;
-    var loginDialog = null;
-    //this tracks the last date/time that the user's remainingAuthSeconds was updated from the server
-    // this is used so that we know when to go and get the user's remaining seconds directly.
-    var lastServerTimeoutSet = null;
+        var currentUser = null;
+        var lastUserId = null;
+        var loginDialog = null;
+        //this tracks the last date/time that the user's remainingAuthSeconds was updated from the server
+        // this is used so that we know when to go and get the user's remaining seconds directly.
+        var lastServerTimeoutSet = null;
 
-    // Redirect to the given url (defaults to '/')
-    function redirect(url) {
-        url = url || '/';
-        $location.path(url);
-    }
-
-    function openLoginDialog(isTimedOut) {
-        if (!loginDialog) {
-            loginDialog = dialogService.open({
-                template: 'views/common/dialogs/login.html',
-                modalClass: "login-overlay",
-                animation: "slide",
-                show: true,
-                callback: onLoginDialogClose,
-                dialogData: {
-                    isTimedOut: isTimedOut
-                }
-            });
-        }
-    }
-
-    function onLoginDialogClose(success) {
-        loginDialog = null;
-
-        if (success) {
-            securityRetryQueue.retryAll();
-        } else {
-            securityRetryQueue.cancelAll();
-            redirect();
-        }
-    }
-
-    /** 
-    This methods will set the current user when it is resolved and 
-    will then start the counter to count in-memory how many seconds they have 
-    remaining on the auth session
-    */
-    function setCurrentUser(usr) {
-        if (!usr.remainingAuthSeconds) {
-            throw "The user object is invalid, the remainingAuthSeconds is required.";
-        }
-        currentUser = usr;
-        lastServerTimeoutSet = new Date();
-        //start the timer
-        countdownUserTimeout();
-    }
-    
-    /** 
-    Method to count down the current user's timeout seconds, 
-    this will continually count down their current remaining seconds every 2 seconds until
-    there are no more seconds remaining.
-    */
-    function countdownUserTimeout() {
-
-        $timeout(function () {
-
-            if (currentUser) {
-                //countdown by 2 seconds since that is how long our timer is for.
-                currentUser.remainingAuthSeconds -= 2;
-
-                //if there are more than 30 remaining seconds, recurse!
-                if (currentUser.remainingAuthSeconds > 30) {
-
-                    //we need to check when the last time the timeout was set from the server, if 
-                    // it has been more than 30 seconds then we'll manually go and retrieve it from the 
-                    // server - this helps to keep our local countdown in check with the true timeout.
-                    if (lastServerTimeoutSet != null) {
-                        var now = new Date();
-                        var seconds = (now.getTime() - lastServerTimeoutSet.getTime()) / 1000;
-
-                        if (seconds > 30) {
-
-                            //first we'll set the lastServerTimeoutSet to null - this is so we don't get back in to this loop while we 
-                            // wait for a response from the server otherwise we'll be making double/triple/etc... calls while we wait.
-                            lastServerTimeoutSet = null;
-
-                            //now go get it from the server
-                            //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
-                            angularHelper.safeApply($rootScope, function() {                                
-                                authResource.getRemainingTimeoutSeconds().then(function (result) {                            
-                                    setUserTimeoutInternal(result);
-                                });
-                            });
-                        }
+        function openLoginDialog(isTimedOut) {
+            if (!loginDialog) {
+                loginDialog = dialogService.open({
+                    template: 'views/common/dialogs/login.html',
+                    modalClass: "login-overlay",
+                    animation: "slide",
+                    show: true,
+                    callback: onLoginDialogClose,
+                    dialogData: {
+                        isTimedOut: isTimedOut
                     }
+                });
+            }
+        }
 
-                    //recurse the countdown!
-                    countdownUserTimeout();
-                }
-                else {
+        function onLoginDialogClose(success) {
+            loginDialog = null;
 
-                    //we are either timed out or very close to timing out so we need to show the login dialog.                                        
-                    if (Umbraco.Sys.ServerVariables.umbracoSettings.keepUserLoggedIn !== true) {
-                        //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
-                        angularHelper.safeApply($rootScope, function () {
-                            userAuthExpired();
-                        });
-                    }
-                    else {
-                        //we've got less than 30 seconds remaining so let's check the server
+            if (success) {
+                securityRetryQueue.retryAll();
+            }
+            else {
+                securityRetryQueue.cancelAll();
+                $location.path('/');
+            }
+        }
 
+        /** 
+        This methods will set the current user when it is resolved and 
+        will then start the counter to count in-memory how many seconds they have 
+        remaining on the auth session
+        */
+        function setCurrentUser(usr) {
+            if (!usr.remainingAuthSeconds) {
+                throw "The user object is invalid, the remainingAuthSeconds is required.";
+            }
+            currentUser = usr;
+            lastServerTimeoutSet = new Date();
+            //start the timer
+            countdownUserTimeout();
+        }
+
+        /** 
+        Method to count down the current user's timeout seconds, 
+        this will continually count down their current remaining seconds every 2 seconds until
+        there are no more seconds remaining.
+        */
+        function countdownUserTimeout() {
+
+            $timeout(function () {
+
+                if (currentUser) {
+                    //countdown by 2 seconds since that is how long our timer is for.
+                    currentUser.remainingAuthSeconds -= 2;
+
+                    //if there are more than 30 remaining seconds, recurse!
+                    if (currentUser.remainingAuthSeconds > 30) {
+
+                        //we need to check when the last time the timeout was set from the server, if 
+                        // it has been more than 30 seconds then we'll manually go and retrieve it from the 
+                        // server - this helps to keep our local countdown in check with the true timeout.
                         if (lastServerTimeoutSet != null) {
-                            //first we'll set the lastServerTimeoutSet to null - this is so we don't get back in to this loop while we 
-                            // wait for a response from the server otherwise we'll be making double/triple/etc... calls while we wait.
-                            lastServerTimeoutSet = null;
+                            var now = new Date();
+                            var seconds = (now.getTime() - lastServerTimeoutSet.getTime()) / 1000;
 
-                            //now go get it from the server
-                            //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
-                            angularHelper.safeApply($rootScope, function() {
-                                authResource.getRemainingTimeoutSeconds().then(function (result) {
-                                    setUserTimeoutInternal(result);
+                            if (seconds > 30) {
+
+                                //first we'll set the lastServerTimeoutSet to null - this is so we don't get back in to this loop while we 
+                                // wait for a response from the server otherwise we'll be making double/triple/etc... calls while we wait.
+                                lastServerTimeoutSet = null;
+
+                                //now go get it from the server
+                                //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
+                                angularHelper.safeApply($rootScope, function () {
+                                    authResource.getRemainingTimeoutSeconds().then(function (result) {
+                                        setUserTimeoutInternal(result);
+                                    });
                                 });
-                            });
+                            }
                         }
-                        
+
                         //recurse the countdown!
                         countdownUserTimeout();
+                    }
+                    else {
 
+                        //we are either timed out or very close to timing out so we need to show the login dialog.                                        
+                        if (Umbraco.Sys.ServerVariables.umbracoSettings.keepUserLoggedIn !== true) {
+                            //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
+                            angularHelper.safeApply($rootScope, function () {
+                                userAuthExpired();
+                            });
+                        }
+                        else {
+                            //we've got less than 30 seconds remaining so let's check the server
+
+                            if (lastServerTimeoutSet != null) {
+                                //first we'll set the lastServerTimeoutSet to null - this is so we don't get back in to this loop while we 
+                                // wait for a response from the server otherwise we'll be making double/triple/etc... calls while we wait.
+                                lastServerTimeoutSet = null;
+
+                                //now go get it from the server
+                                //NOTE: the safeApply because our timeout is set to not run digests (performance reasons)
+                                angularHelper.safeApply($rootScope, function () {
+                                    authResource.getRemainingTimeoutSeconds().then(function (result) {
+                                        setUserTimeoutInternal(result);
+                                    });
+                                });
+                            }
+
+                            //recurse the countdown!
+                            countdownUserTimeout();
+
+                        }
                     }
                 }
+            }, 2000, //every 2 seconds
+                false); //false = do NOT execute a digest for every iteration
+        }
+
+        /** Called to update the current user's timeout */
+        function setUserTimeoutInternal(newTimeout) {
+
+
+            var asNumber = parseFloat(newTimeout);
+            if (!isNaN(asNumber) && currentUser && angular.isNumber(asNumber)) {
+                currentUser.remainingAuthSeconds = newTimeout;
+                lastServerTimeoutSet = new Date();
             }
-        }, 2000, //every 2 seconds
-            false); //false = do NOT execute a digest for every iteration
-    }
-    
-    /** Called to update the current user's timeout */
-    function setUserTimeoutInternal(newTimeout) {
-
-
-        var asNumber = parseFloat(newTimeout);
-        if (!isNaN(asNumber) && currentUser && angular.isNumber(asNumber)) {
-            currentUser.remainingAuthSeconds = newTimeout;
-            lastServerTimeoutSet = new Date();
-        }
-    }
-    
-    /** resets all user data, broadcasts the notAuthenticated event and shows the login dialog */
-    function userAuthExpired(isLogout) {
-        //store the last user id and clear the user
-        if (currentUser && currentUser.id !== undefined) {
-            lastUserId = currentUser.id;
         }
 
-        if(currentUser){
-            currentUser.remainingAuthSeconds = 0;
-        }
-        
-        lastServerTimeoutSet = null;
-        currentUser = null;
-        
-        //broadcast a global event that the user is no longer logged in
-        eventsService.emit("app.notAuthenticated");
+        /** resets all user data, broadcasts the notAuthenticated event and shows the login dialog */
+        function userAuthExpired(isLogout) {
+            //store the last user id and clear the user
+            if (currentUser && currentUser.id !== undefined) {
+                lastUserId = currentUser.id;
+            }
 
-        openLoginDialog(isLogout === undefined ? true : !isLogout);
-    }
-
-    // Register a handler for when an item is added to the retry queue
-    securityRetryQueue.onItemAddedCallbacks.push(function (retryItem) {
-        if (securityRetryQueue.hasMore()) {
-            userAuthExpired();
-        }
-    });
-
-    return {
-
-        /** Internal method to display the login dialog */
-        _showLoginDialog: function () {
-            openLoginDialog();
-        },
-
-        /** Returns a promise, sends a request to the server to check if the current cookie is authorized  */
-        isAuthenticated: function () {
-            //if we've got a current user then just return true
             if (currentUser) {
-                var deferred = $q.defer();
-                deferred.resolve(true);
-                return deferred.promise;
+                currentUser.remainingAuthSeconds = 0;
             }
-            return authResource.isAuthenticated();
-        },
 
-        /** Returns a promise, sends a request to the server to validate the credentials  */
-        authenticate: function (login, password) {
+            lastServerTimeoutSet = null;
+            currentUser = null;
 
-            return authResource.performLogin(login, password)
-                .then(function (data) {
+            //broadcast a global event that the user is no longer logged in
+            eventsService.emit("app.notAuthenticated");
 
-                    //when it's successful, return the user data
-                    setCurrentUser(data);
+            openLoginDialog(isLogout === undefined ? true : !isLogout);
+        }
 
-                    var result = { user: data, authenticated: true, lastUserId: lastUserId };
+        // Register a handler for when an item is added to the retry queue
+        securityRetryQueue.onItemAddedCallbacks.push(function (retryItem) {
+            if (securityRetryQueue.hasMore()) {
+                userAuthExpired();
+            }
+        });
 
-                    //broadcast a global event
-                    eventsService.emit("app.authenticated", result);
-                    return result;
-                });
-        },
+        return {
 
-        /** Logs the user out and redirects to the login page */
-        logout: function () {
-            return authResource.performLogout()
-                .then(function (data) {
+            /** Internal method to display the login dialog */
+            _showLoginDialog: function () {
+                openLoginDialog();
+            },
 
-                    userAuthExpired();
+            /** Returns a promise, sends a request to the server to check if the current cookie is authorized  */
+            isAuthenticated: function () {
+                //if we've got a current user then just return true
+                if (currentUser) {
+                    var deferred = $q.defer();
+                    deferred.resolve(true);
+                    return deferred.promise;
+                }
+                return authResource.isAuthenticated();
+            },
 
-                    $location.path("/login").search({check: false});
+            /** Returns a promise, sends a request to the server to validate the credentials  */
+            authenticate: function (login, password) {
 
-                    return null;
-                });
-        },
+                return authResource.performLogin(login, password)
+                    .then(function (data) {
 
-        /** Returns the current user object in a promise  */
-        getCurrentUser: function (args) {
-            var deferred = $q.defer();
-            
-            if (!currentUser) {
-                authResource.getCurrentUser()
-                    .then(function(data) {
+                        //when it's successful, return the user data
+                        setCurrentUser(data);
 
                         var result = { user: data, authenticated: true, lastUserId: lastUserId };
 
-                        if (args && args.broadcastEvent) {
-                            //broadcast a global event, will inform listening controllers to load in the user specific data
-                            eventsService.emit("app.authenticated", result);
-                        }
-
-                        setCurrentUser(data);
-                        currentUser.avatar = 'http://www.gravatar.com/avatar/' + data.emailHash + '?s=40&d=404';
-                        deferred.resolve(currentUser);
+                        //broadcast a global event
+                        eventsService.emit("app.authenticated", result);
+                        return result;
                     });
+            },
 
+            /** Logs the user out 
+             */
+            logout: function () {
+
+                return authResource.performLogout()
+                    .then(function(data) {
+                        userAuthExpired();
+                        //done!
+                        return null;
+                    });
+            },
+
+            /** Returns the current user object in a promise  */
+            getCurrentUser: function (args) {
+                var deferred = $q.defer();
+
+                if (!currentUser) {
+                    authResource.getCurrentUser()
+                        .then(function (data) {
+
+                            var result = { user: data, authenticated: true, lastUserId: lastUserId };
+
+                            if (args && args.broadcastEvent) {
+                                //broadcast a global event, will inform listening controllers to load in the user specific data
+                                eventsService.emit("app.authenticated", result);
+                            }
+
+                            setCurrentUser(data);
+                            currentUser.avatar = 'http://www.gravatar.com/avatar/' + data.emailHash + '?s=40&d=404';
+                            deferred.resolve(currentUser);
+                        });
+
+                }
+                else {
+                    deferred.resolve(currentUser);
+                }
+
+                return deferred.promise;
+            },
+
+            /** Called whenever a server request is made that contains a x-umb-user-seconds response header for which we can update the user's remaining timeout seconds */
+            setUserTimeout: function (newTimeout) {
+                setUserTimeoutInternal(newTimeout);
             }
-            else {
-                deferred.resolve(currentUser);
-            }
-            
-            return deferred.promise;
-        },
-        
-        /** Called whenever a server request is made that contains a x-umb-user-seconds response header for which we can update the user's remaining timeout seconds */
-        setUserTimeout: function(newTimeout) {
-            setUserTimeoutInternal(newTimeout);
-        }
-    };
+        };
 
-});
-
+    });
 /*Contains multiple services for various helper tasks */
 
 function packageHelper(assetsService, treeService, eventsService, $templateCache) {

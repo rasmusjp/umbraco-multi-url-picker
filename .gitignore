@@ -163,6 +163,7 @@ src/RJP.MultiUrlPicker/[Bb]in/*
 # =========================
 # Umbraco
 # =========================
+src/TestSite/App_Data/NuGetBackup/*
 src/TestSite/App_Data/umbraco.config
 src/TestSite/App_Data/preview/*.config
 src/TestSite/App_Data/TEMP/ClientDependency/
@@ -179,6 +180,7 @@ src/TestSite/App_Data/courier/cache/*
 src/TestSite/App_Data/umbraco.licensing.log.txt
 src/TestSite/aspnet_client/
 src/TestSite/App_Data/*.udt
+src/TestSite/media/created-packages/*
 # =========================
 # ImageProcessor Cache 
 # =========================

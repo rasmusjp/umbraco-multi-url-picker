@@ -6,7 +6,13 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
 
   if( $scope.model.value ) {
     _.each($scope.model.value, function( item, i ) {
-      $scope.renderModel.push({ name: item.name, id: item.id, url: item.url, target: item.target })
+      $scope.renderModel.push({
+          name: item.name
+        , id: item.id
+        , url: item.url
+        , target: item.target
+        , isMedia: item.isMedia
+      })
     })
   }
 
@@ -22,7 +28,17 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
   
   $scope.edit = function(index) {
     var link = $scope.renderModel[index]
-    dialogService.linkPicker({ currentTarget: { id: link.id, index: index, name: link.name, url: link.url, target: link.target }, callback: $scope.onContentSelected })
+    dialogService.linkPicker({
+        currentTarget: {
+            id: link.isMedia ? null : link.id
+          , index: index
+          , name: link.name
+          , url: link.url
+          , target: link.target
+          , isMedia: link.isMedia
+        }
+      , callback: $scope.onContentSelected
+    })
   }
 
   $scope.remove = function(index) {
@@ -58,12 +74,15 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
         , name: e.name
         , url: e.url
         , target: e.target
-    };
+        , isMedia: e.isMedia
+    }
+
     if( e.index != null ) {
       $scope.renderModel[ e.index ] = link
     } else {
       $scope.renderModel.push( link )
     }
+
     $scope.model.value = $scope.renderModel
     dialogService.closeAll()
   }

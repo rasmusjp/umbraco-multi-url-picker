@@ -1,5 +1,5 @@
-/*! umbraco - v7.0.0-Beta - 2014-04-08
- * https://github.com/umbraco/umbraco-cms/tree/7.0.0
+/*! umbraco - v7.1.2 - 2014-05-09
+ * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
  */
@@ -393,7 +393,8 @@ angular.module("umbraco.install").controller("Umbraco.Installer.DataBaseControll
 	$scope.dbs = [
 					{name: 'Microsoft SQL Server Compact (SQL CE)', id: 0},
 					{name: 'Microsoft SQL Server', id: 1},
-					{name: 'MySQL', id: 2},
+                    { name: 'Microsoft SQL Azure', id: 3 },
+                    { name: 'MySQL', id: 2 },
 					{name: 'Custom connection string', id: -1}];
 
 	if(installerService.status.current.model.dbType === undefined){

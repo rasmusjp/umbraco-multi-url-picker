@@ -1,5 +1,5 @@
-/*! umbraco - v7.0.0-Beta - 2014-04-08
- * https://github.com/umbraco/umbraco-cms/tree/7.0.0
+/*! umbraco - v7.1.2 - 2014-05-09
+ * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
  */
@@ -1737,7 +1737,7 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
                     }
                     else {
                         scope.eventhandler.one("treeLoaded", function(e, args) {
-                            doLoad(args.tree);
+                            doLoad(args.tree.root);
                         });
                     }
                 }
@@ -1910,6 +1910,7 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
 }
 
 angular.module("umbraco.directives").directive('umbTree', umbTreeDirective);
+
 /**
  * @ngdoc directive
  * @name umbraco.directives.directive:umbTreeItem
@@ -2628,7 +2629,7 @@ angular.module('umbraco.directives.validation')
 * Another thing this directive does is to ensure that any .control-group that contains form elements that are invalid will
 * be marked with the 'error' css class. This ensures that labels included in that control group are styled correctly.
 **/
-function valFormManager(serverValidationManager, $rootScope, $log, $timeout, notificationsService) {
+function valFormManager(serverValidationManager, $rootScope, $log, $timeout, notificationsService, eventsService) {
     return {
         require: "form",
         restrict: "A",
@@ -2673,29 +2674,33 @@ function valFormManager(serverValidationManager, $rootScope, $log, $timeout, not
                 formCtrl.$setPristine();
             });
 
-            //if we wish to turn of the unsaved changes confirmation msg
-            //this is the place to do it
-            var locationEvent = $rootScope.$on('$locationChangeStart', function (event, nextLocation, currentLocation) {
-                    if (!formCtrl.$dirty) {
-                        return;
-                    }
-                    
-                    var path = nextLocation.split("#")[1];
-                    if (path) {
-                        if (path.indexOf("%253") || path.indexOf("%252")) {
-                            path = decodeURIComponent(path);
-                        }
+            //This handles the 'unsaved changes' dialog which is triggered when a route is attempting to be changed but
+            // the form has pending changes
+            var locationEvent = $rootScope.$on('$locationChangeStart', function(event, nextLocation, currentLocation) {
+                if (!formCtrl.$dirty) {                   
+                    return;
+                }
 
-                        if(!notificationsService.hasView()){
-                            var msg = { view: "confirmroutechange", args: { path: path, listener: locationEvent } };
-                            notificationsService.add(msg);
-                        }
-                        
-                        event.preventDefault();
+                var path = nextLocation.split("#")[1];
+                if (path) {
+                    if (path.indexOf("%253") || path.indexOf("%252")) {
+                        path = decodeURIComponent(path);
                     }
-                    
+
+                    if (!notificationsService.hasView()) {
+                        var msg = { view: "confirmroutechange", args: { path: path, listener: locationEvent } };
+                        notificationsService.add(msg);
+                    }
+
+                    //prevent the route!
+                    event.preventDefault();
+
+                    //raise an event
+                    eventsService.emit("valFormManager.pendingChanges", true);
+                }
+
             });
-
+            //Ensure to remove the event handler when this instance is destroyted
             scope.$on('$destroy', function() {
                 if(locationEvent){
                     locationEvent();
