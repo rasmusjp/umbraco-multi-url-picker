@@ -1,6 +1,9 @@
 ﻿'use strict'
 
-angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($scope, dialogService) {
+angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($scope, dialogService, iconHelper, entityResource) {
+  var documentIds = []
+    , mediaIds = []
+
   $scope.renderModel = []
   $scope.cfg = { multiPicker: "0" }
 
@@ -12,9 +15,27 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
         , url: item.url
         , target: item.target
         , isMedia: item.isMedia
+        , icon: item.icon || 'icon-link'
       })
+      if( item.id ) {
+        (item.isMedia ? mediaIds : documentIds).push( item.id )
+      }
     })
   }
+
+  var setIcon = function( nodes ) {
+    if( _.isArray( nodes ) ) {
+      _.each( nodes, setIcon )
+    } else {
+      var item = _.find( $scope.renderModel, function( item ) {
+        return +item.id === nodes.id
+      })
+      item.icon = iconHelper.convertFromLegacyIcon( nodes.icon );
+    }
+  }
+
+  entityResource.getByIds( documentIds, 'Document' ).then( setIcon )
+  entityResource.getByIds( mediaIds, 'Media' ).then( setIcon )
 
   if ( $scope.model.config ) {
     $scope.cfg = angular.extend( $scope.cfg, $scope.model.config )
@@ -30,7 +51,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
     var link = $scope.renderModel[index]
     dialogService.linkPicker({
         currentTarget: {
-            id: link.isMedia ? null : link.id
+            id: link.isMedia ? null : link.id // the linkPicker breaks if it get an id for media
           , index: index
           , name: link.name
           , url: link.url
@@ -75,12 +96,17 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
         , url: e.url
         , target: e.target
         , isMedia: e.isMedia
+        , icon: 'icon-link'
     }
 
     if( e.index != null ) {
       $scope.renderModel[ e.index ] = link
     } else {
       $scope.renderModel.push( link )
+    }
+
+    if( e.id ) {
+      entityResource.getById( e.id, e.isMedia ? 'Media' : 'Document' ).then( setIcon )
     }
 
     $scope.model.value = $scope.renderModel
