@@ -3,6 +3,8 @@
 Allows editors to pick and sort multiple urls, it uses Umbraco's link picker which supports internal and external links and media. 
 
 ## Installation
+v1.0.0 only works with Umbraco 7.1.2 and newer.
+
 Install the [package](http://our.umbraco.org/projects/backoffice-extensions/multi-url-picker) from the Umbraco package repository.
 
 or

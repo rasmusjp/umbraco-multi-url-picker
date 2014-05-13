@@ -1,3 +1,11 @@
+1.0.0
+=====
+
+  * upgraded to Umbraco 7.1.2
+  * removed Pick multiple items field
+  * added min/max items field
+  * added document icons to the editor
+
 0.2.0
 =====
 
