@@ -5,7 +5,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
     , mediaIds = []
 
   $scope.renderModel = []
-  $scope.cfg = { multiPicker: "0" }
+  $scope.cfg = { maxNumberOfItems: 0, minNumberOfItems: 0 }
 
   if( $scope.model.value ) {
     _.each($scope.model.value, function( item, i ) {
@@ -41,7 +41,12 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
     $scope.cfg = angular.extend( $scope.cfg, $scope.model.config )
   }
 
-  $scope.cfg.multiPicker = ($scope.cfg.multiPicker === "1" ? true : false)
+  if( $scope.cfg.maxNumberOfItems <= 0 ) { 
+    delete $scope.cfg.maxNumberOfItems
+  }
+  if( $scope.cfg.minNumberOfItems <= 0 ) { 
+    $scope.cfg.minNumberOfItems = 0
+  }
 
   $scope.openLinkPicker = function() {
     dialogService.linkPicker({ callback: $scope.onContentSelected })
@@ -69,13 +74,24 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
   
   $scope.$watch(
       function() {
-         return $scope.renderModel
+          return _.map($scope.renderModel, function ( i ) { return i.id }).join()
       }
     , function(newVal) {
         if( $scope.renderModel.length ) {
           $scope.model.value = $scope.renderModel
         } else {
           $scope.model.value = null
+        }
+
+        if( $scope.cfg.minNumberOfItems && +$scope.cfg.minNumberOfItems > $scope.renderModel.length ) {
+          $scope.multiUrlPickerForm.minCount.$setValidity( 'minCount', false )
+        } else {
+          $scope.multiUrlPickerForm.minCount.$setValidity( 'minCount', true )
+        }
+         if( $scope.cfg.maxNumberOfItems && +$scope.cfg.maxNumberOfItems < $scope.renderModel.length ) {
+          $scope.multiUrlPickerForm.maxCount.$setValidity( 'maxCount', false )
+        } else {
+          $scope.multiUrlPickerForm.maxCount.$setValidity( 'maxCount', true )
         }
       }
   )

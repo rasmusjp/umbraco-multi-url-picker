@@ -7,12 +7,17 @@
          , valueType: "JSON"
        }
      , prevalues: {
-          fields: [{
-                 label: "Pick multiple items"
-               , key: "multiPicker"
-               , view: "boolean"
-             }
-          ]
+          fields: [
+            {
+                label: "Min number of items"
+              , key: "minNumberOfItems"
+              , view: "number"
+            } , {
+                label: "Max number of items"
+              , key: "maxNumberOfItems"
+              , view: "number"
+            } 
+        ]
       }
    }]
  , javascript: [
