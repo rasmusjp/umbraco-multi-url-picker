@@ -262,7 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="App_Plugins\RJP.MultiUrlPicker\package.manifest" />
+    <Content Include="App_Plugins\RJP.MultiUrlPicker\package.manifest" />
     <None Include="MultiUrlPicker.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
