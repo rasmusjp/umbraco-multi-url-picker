@@ -10,7 +10,7 @@ describe('Unit test for MultiUrlPickerController', function () {
         $scope = $rootScope.$new();
         $scope.model = {
             alias: 'property',
-            label: '<%= names.name %> property',
+            label: 'RJP.MultiUrlPicker property',
             description: 'desc',
             config: {}
         };
