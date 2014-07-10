@@ -1,10 +1,12 @@
 ﻿
 describe('RJP.MultiUrlPickerController', function () {
-    var $scope, $location, $rootScope, createController;
+    var $scope, $location, $rootScope, controller, createController;
 
     beforeEach(module('umbraco'));
-    
+
     beforeEach(inject(function ($rootScope, $controller, angularHelper, entityMocks, mocksUtils) {
+
+        controller = $controller;
 
         //mock the scope model
         $scope = $rootScope.$new();
@@ -22,5 +24,31 @@ describe('RJP.MultiUrlPickerController', function () {
                 '$scope': $scope
             });
         };
+    }));
+
+    it("doesn't try to get entity when id is less than 1", inject(function ($q, entityResource) {
+
+        var e = {
+            id: -20,
+            name: 'Recycle Bin',
+            url: '/',
+            isMedia: false,
+            icon: ''
+        };
+
+        controller('RJP.MultiUrlPickerController', {
+            $scope: $scope,
+            entityResource: entityResource
+        });
+
+        spyOn(entityResource, 'getById').andCallFake(function () {
+            var deferred = $q.defer();
+            deferred.resolve(e);
+            return deferred.promise;
+        });
+
+        $scope.onContentSelected(e);
+
+        expect(entityResource.getById).not.toHaveBeenCalled();
     }));
 });
