@@ -1,9 +1,9 @@
 ﻿
-describe('Unit test for MultiUrlPickerController', function () {
+describe('RJP.MultiUrlPickerController', function () {
     var $scope, $location, $rootScope, createController;
 
     beforeEach(module('umbraco'));
-
+    
     beforeEach(inject(function ($rootScope, $controller, angularHelper, entityMocks, mocksUtils) {
 
         //mock the scope model
@@ -24,11 +24,9 @@ describe('Unit test for MultiUrlPickerController', function () {
         };
     }));
 
-    it('should pass', function () {
-        expect(true).toBe(true);
+    it('should not be null', function () {
+        var controller = createController();
+        expect(controller).not.to.equal(null);
     });
 
-    it('should fail', function () {
-        expect(true).toBe(false);
-    });
 });
