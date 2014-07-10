@@ -113,7 +113,7 @@ module.exports = function (grunt) {
         jshint: {
             dev: {
                 files: {
-                    src: ['**/*.js']
+                    src: ['<%= basePath %>/**/*.js']
                 },
                 options: {
                     curly: true,
