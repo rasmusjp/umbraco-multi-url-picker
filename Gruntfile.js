@@ -150,7 +150,7 @@ module.exports = function (grunt) {
             grunt.log.oklns('Test assets found, running tests');
             grunt.task.run(['karma']);
         } else {
-            grunt.log.errorlns('Tests assets not found, skipping tests');
+            grunt.log.errorlns('Tests assets not found, skipping tests. Run with --target option to copy assets.');
         }
     });
 };
