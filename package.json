@@ -2,9 +2,6 @@
   "name": "umbraco-multi-url-picker",
   "version": "1.0.0",
   "description": "Multi Url Picker for Umbraco 7",
-  "scripts": {
-    "test": "karma start"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/rasmusjp/umbraco-multi-url-picker.git"
