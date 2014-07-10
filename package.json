@@ -21,5 +21,11 @@
   "bugs": {
     "url": "https://github.com/rasmusjp/umbraco-multi-url-picker/issues"
   },
-  "homepage": "https://github.com/rasmusjp/umbraco-multi-url-picker"
+  "homepage": "https://github.com/rasmusjp/umbraco-multi-url-picker",
+  "devDependencies": {
+    "karma": "~0.12.16",
+    "karma-xml-reporter": "~0.1.4",
+    "karma-jasmine": "~0.1.5",
+    "karma-phantomjs-launcher": "~0.1.4"
+  }
 }
