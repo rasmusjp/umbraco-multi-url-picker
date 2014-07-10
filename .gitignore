@@ -178,7 +178,6 @@ src/TestSite/App_Data/FeedCache/
 src/TestSite/App_Data/courier/revisions/
 src/TestSite/App_Data/courier/cache/*
 src/TestSite/App_Data/umbraco.licensing.log.txt
-src/TestSite/App_Data/Umbraco.sdf
 src/TestSite/aspnet_client/
 src/TestSite/App_Data/*.udt
 src/TestSite/media/created-packages/*
