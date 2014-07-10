@@ -13,92 +13,42 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         dest: grunt.option('target') || 'dist',
-        basePath: 'App_Plugins/<%%= pkg.name %>',
-
-        concat: {
-            dist: {
-                src: [
-                  'app/scripts/controllers/<%= names.file %>.controller.js'
-                ],
-                dest: '<%%= dest %>/<%%= basePath %>/js/<%= names.file %>.js',
-                nonull: true
-            }
-        },
-
-        less: {
-            dist: {
-                options: {
-                    paths: ['app/styles'],
-                },
-                files: {
-                    '<%%= dest %>/<%%= basePath %>/css/<%= names.file %>.css': 'app/styles/<%= names.file %>.less',
-                }
-            }
-        },
+        basePath: 'src/RJP.MultiUrlPicker/App_Plugins/RJP.MultiUrlPicker',
 
         watch: {
             options: {
                 atBegin: true
             },
 
-            less: {
-                files: ['app/styles/**/*.less'],
-                tasks: ['less:dist']
-            },
-
-            js: {
-                files: ['app/scripts/**/*.js'],
-                tasks: ['concat:dist']
-            },
-
             testControllers: {
-                files: ['app/scripts/**/*.controller.js', 'test/specs/**/*.spec.js'],
+                files: [
+                    '<%= basePath %>/**/*.js',
+                    'src/RJP.MultiUrlPicker/test/specs/**/*.spec.js'
+                ],
                 tasks: ['jshint', 'test']
             },
-
-            html: {
-                files: ['app/views/**/*.html'],
-                tasks: ['copy:views']
-            },
-
-            config: {
-                files: ['config/package.manifest'],
-                tasks: ['copy:config']
-            }
         },
 
         copy: {
-            config: {
-                src: 'config/package.manifest',
-                dest: '<%%= dest %>/<%%= basePath %>/package.manifest',
-            },
-
-            views: {
-                expand: true,
-                cwd: 'app/views/',
-                src: '**',
-                dest: '<%%= dest %>/<%%= basePath %>/views/'
-            },
-
             nuget: {
                 expand: true,
-                cwd: '<%%= dest %>',
+                cwd: '<%= basePath %>',
                 src: '**',
                 dest: 'tmp/nuget/content/'
             },
 
             umbraco: {
                 expand: true,
-                cwd: '<%%= dest %>/',
+                cwd: '<%= basePath %>/',
                 src: '**',
                 dest: 'tmp/umbraco/'
             },
 
             testAssets: {
                 expand: true,
-                cwd: '<%%= dest %>',
+                cwd: '<%= dest %>',
                 src: ['js/umbraco.*.js', 'lib/**/*.js'],
-                dest: 'test/assets/'
+                dest: 'src/RJP.MultiUrlPicker/test/assets/'
             }
         },
 
@@ -106,14 +56,14 @@ module.exports = function (grunt) {
             nuspec: {
                 options: {
                     data: {
-                        name: '<%%= pkg.name %>',
-                        version: '<%%= pkg.version %>',
-                        author: '<%%= pkg.author.name %>',
-                        description: '<%%= pkg.description %>'
+                        name: '<%= pkg.name %>',
+                        version: '<%= pkg.version %>',
+                        author: '<%= pkg.author.name %>',
+                        description: '<%= pkg.description %>'
                     }
                 },
                 files: {
-                    'tmp/nuget/<%%= pkg.name %>.nuspec': 'config/package.nuspec'
+                    'tmp/nuget/<%%= pkg.name %>.nuspec': 'package.nuspec'
                 }
             }
         },
@@ -128,20 +78,20 @@ module.exports = function (grunt) {
 
         nugetpack: {
             dist: {
-                src: 'tmp/nuget/<%%= pkg.name %>.nuspec',
+                src: 'tmp/nuget/<%= pkg.name %>.nuspec',
                 dest: 'pkg/nuget/'
             }
         },
 
         umbracoPackage: {
             options: {
-                name: '<%%= pkg.name %>',
-                version: '<%%= pkg.version %>',
-                url: '<%%= pkg.url %>',
-                license: '<%%= pkg.license %>',
-                licenseUrl: '<%%= pkg.licenseUrl %>',
-                author: '<%%= pkg.author %>',
-                authorUrl: '<%%= pkg.authorUrl %>',
+                name: '<%= pkg.name %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.url %>',
+                license: '<%= pkg.license %>',
+                licenseUrl: '<%= pkg.licenseUrl %>',
+                author: '<%= pkg.author %>',
+                authorUrl: '<%= pkg.authorUrl %>',
                 manifest: 'config/package.xml',
                 readme: 'config/readme.txt',
                 sourceDir: 'tmp/umbraco',
@@ -151,19 +101,19 @@ module.exports = function (grunt) {
 
         clean: {
             dist: '<%= dest %>',
-            test: 'test/assets'
+            test: 'src/RJP.MultiUrlPicker/test/assets'
         },
 
         karma: {
             unit: {
-                configFile: 'test/karma.conf.js'
+                configFile: 'src/RJP.MultiUrlPicker/test/karma.conf.js'
             }
         },
 
         jshint: {
             dev: {
                 files: {
-                    src: ['app/scripts/**/*.js']
+                    src: ['**/*.js']
                 },
                 options: {
                     curly: true,
@@ -187,7 +137,7 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('default', ['jshint', 'concat', 'less', 'copy:config', 'copy:views']);
+    grunt.registerTask('default', ['jshint']);
     grunt.registerTask('nuget', ['clean', 'default', 'copy:nuget', 'template:nuspec', 'mkdir:pkg', 'nugetpack']);
     grunt.registerTask('package', ['clean', 'default', 'copy:umbraco', 'mkdir:pkg', 'umbracoPackage']);
 
@@ -196,7 +146,7 @@ module.exports = function (grunt) {
         //copies over umbraco assets from --target, this must point at the /umbraco/ directory
         if (assetsDir !== 'dist') {
             grunt.task.run(['clean:test', 'copy:testAssets', 'karma']);
-        } else if (grunt.file.isDir('test/assets/js/')) {
+        } else if (grunt.file.isDir('src/RJP.MultiUrlPicker/test/assets/js/')) {
             grunt.log.oklns('Test assets found, running tests');
             grunt.task.run(['karma']);
         } else {

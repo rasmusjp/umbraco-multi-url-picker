@@ -189,8 +189,12 @@ src/TestSite/App_Data/Cache/*
 # MultiUrlPicker Specific
 # =========================
 src/TestSite/App_Plugins/RJP.MultiUrlPicker/*
+src/RJP.MultiUrlPicker/test-results.testxml
+src/RJP.MultiUrlPicker/test/assets/
+tmp/
 
 # =========================
 # npm
 # =========================
 node_modules/
+
