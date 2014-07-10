@@ -29,7 +29,7 @@ module.exports = function (config) {
           'test/app.conf.js',
           'test/assets/js/umbraco.*.js',
 
-          'App_Plugins/RJP.MultiUrlPicker/*.js',
+          'App_Plugins/RJP.MultiUrlPicker/**/*.js',
           'test/**/*.spec.js'
         ],
 
