@@ -23,10 +23,4 @@ describe('RJP.MultiUrlPickerController', function () {
             });
         };
     }));
-
-    it('should not be null', function () {
-        var controller = createController();
-        expect(controller).not.to.equal(null);
-    });
-
 });
