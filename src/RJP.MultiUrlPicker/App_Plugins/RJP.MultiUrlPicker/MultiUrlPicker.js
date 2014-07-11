@@ -122,7 +122,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
       $scope.renderModel.push( link )
     }
 
-    if( e.id ) {
+    if( e.id && e.id > 0 ) {
       entityResource.getById( e.id, e.isMedia ? 'Media' : 'Document' ).then( setIcon )
     }
 

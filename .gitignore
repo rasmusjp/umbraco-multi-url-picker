@@ -181,11 +181,22 @@ src/TestSite/App_Data/umbraco.licensing.log.txt
 src/TestSite/aspnet_client/
 src/TestSite/App_Data/*.udt
 src/TestSite/media/created-packages/*
+
 # =========================
 # ImageProcessor Cache 
 # =========================
 src/TestSite/App_Data/Cache/*
+
 # =========================
 # MultiUrlPicker Specific
 # =========================
 src/TestSite/App_Plugins/RJP.MultiUrlPicker/*
+src/RJP.MultiUrlPicker/test-results.testxml
+src/RJP.MultiUrlPicker/test/assets/
+tmp/
+
+# =========================
+# npm
+# =========================
+node_modules/
+
