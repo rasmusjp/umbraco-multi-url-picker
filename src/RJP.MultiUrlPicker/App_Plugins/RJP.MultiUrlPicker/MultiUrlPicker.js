@@ -109,7 +109,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
   $scope.onContentSelected = function(e) {
     var link = {
           id: e.id
-        , name: e.name
+        , name: e.name || e.url
         , url: e.url
         , target: e.target
         , isMedia: e.isMedia
