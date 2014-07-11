@@ -270,9 +270,9 @@
   <ItemGroup>
     <Content Include="App_Plugins\RJP.MultiUrlPicker\MultiUrlPicker.html" />
     <Content Include="App_Plugins\RJP.MultiUrlPicker\MultiUrlPicker.js" />
-    <Content Include="test\app.conf.js" />
-    <Content Include="test\karma.conf.js" />
-    <Content Include="test\spec\MultiUrlPickerController.spec.js" />
+    <None Include="test\app.conf.js" />
+    <None Include="test\karma.conf.js" />
+    <None Include="test\spec\MultiUrlPickerController.spec.js" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

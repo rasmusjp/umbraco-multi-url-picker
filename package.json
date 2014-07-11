@@ -1,6 +1,6 @@
 {
   "name": "umbraco-multi-url-picker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Multi Url Picker for Umbraco 7",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "property",
     "editor"
   ],
-  "author": "Rasmus John Pedersen <developer@dis-play.dk> (http://www.rjp.dk/)",
+  "author": "Rasmus John Pedersen <mail@rjp.dk> (http://www.rjp.dk/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/rasmusjp/umbraco-multi-url-picker/issues"
