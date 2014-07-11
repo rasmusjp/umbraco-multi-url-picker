@@ -27,7 +27,6 @@ describe('RJP.MultiUrlPickerController', function () {
     }));
 
     it("doesn't try to get entity when id is less than 1", inject(function ($q, entityResource) {
-
         var e = {
             id: -20,
             name: 'Recycle Bin',
@@ -51,4 +50,23 @@ describe('RJP.MultiUrlPickerController', function () {
 
         expect(entityResource.getById).not.toHaveBeenCalled();
     }));
+
+    it('uses the url if the Page Title field is left empty', function () {
+        var e = {
+            id: null,
+            name: '',
+            url: 'http://www.google.com/',
+            isMedia: false,
+            icon: ''
+        };
+
+        createController();
+
+        expect($scope.renderModel.length).toBe(0);
+
+        $scope.onContentSelected(e);
+
+        expect($scope.renderModel.length).toBe(1);
+        expect($scope.renderModel[0].name).toBe(e.url);
+    });
 });
