@@ -74,7 +74,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
   
   $scope.$watch(
       function() {
-          return _.map($scope.renderModel, function ( i ) { return i.id }).join()
+          return $scope.renderModel.length
       }
     , function(newVal) {
         if( $scope.renderModel.length ) {
