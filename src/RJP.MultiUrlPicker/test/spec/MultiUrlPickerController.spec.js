@@ -69,4 +69,20 @@ describe('RJP.MultiUrlPickerController', function () {
         expect($scope.renderModel.length).toBe(1);
         expect($scope.renderModel[0].name).toBe(e.url);
     });
+
+    it('shows the url is name is empty when loaded from the database', function () {
+
+        $scope.model.value = [{
+            id: 1,
+            name: '',
+            url: 'http://www.google.com/',
+            isMedia: false,
+            icon: 'icon-link'
+        }];
+
+        createController();
+
+        expect($scope.renderModel.length).toBe(1);
+        eexpect($scope.renderModel[0].name).toBe(e.url);
+    })
 });
