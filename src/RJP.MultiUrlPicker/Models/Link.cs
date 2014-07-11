@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 
-using umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Web;
 
 namespace RJP.MultiUrlPicker.Models
 {
-
     public class Link
     {
         private readonly JToken _linkItem;
@@ -15,6 +13,7 @@ namespace RJP.MultiUrlPicker.Models
         private string _url;
         private string _target;
         private bool? _deleted;
+        private LinkType? _linkType;
 
         public Link(JToken linkItem)
         {
@@ -29,16 +28,13 @@ namespace RJP.MultiUrlPicker.Models
                 if (UmbracoContext.Current == null) return null;
                 var umbHelper = new UmbracoHelper(UmbracoContext.Current);
 
-                var id = (int)Id;
-                var objType = uQuery.GetUmbracoObjectType(id);
-
-                if  (objType == uQuery.UmbracoObjectType.Document)
+                if  (Type == LinkType.Content)
                 {
-                    return umbHelper.TypedContent(id);
+                    return umbHelper.TypedContent(Id.Value);
                 }
-                if (objType == uQuery.UmbracoObjectType.Media)
+                if (Type == LinkType.Media)
                 {
-                    return umbHelper.TypedMedia(id);
+                    return umbHelper.TypedMedia(Id.Value);
                 }
                 return null;
             }
@@ -111,5 +107,31 @@ namespace RJP.MultiUrlPicker.Models
                 return _target == string.Empty ? null : _target;
             }
         }
+
+      public LinkType Type
+      {
+          get
+          {
+              if (_linkType == null)
+              {
+                  if (Id.HasValue)
+                  {
+                      if (_linkItem.Value<bool>("isMedia"))
+                      {
+                          _linkType = LinkType.Media;
+                      }
+                      else
+                      {
+                          _linkType = LinkType.Content;
+                      }
+                  }
+                  else
+                  {
+                      _linkType = LinkType.External;
+                  }
+              }
+              return _linkType.Value;
+          }
+      }
     }
 }

@@ -256,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Link.cs" />
+    <Compile Include="Models\LinkType.cs" />
     <Compile Include="Models\MultiUrls.cs" />
     <Compile Include="MultiUrlPickerValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

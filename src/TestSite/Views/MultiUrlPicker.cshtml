@@ -18,7 +18,18 @@
             <ul>
                 @foreach (var item in multiUrlPicker)
                 {
-                    <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+                    <li>
+                        <a href="@item.Url" target="@item.Target" class="@(item.Type == LinkType.External ? "external" : "internal")">
+                          @if (item.Type == LinkType.Media)
+                          {
+                              <img src="@item.Url" alt="@item.Name"/>
+                          }
+                          else 
+                          {
+                              @item.Name
+                          }
+                        </a>
+                    </li>
                 }
             </ul>
         }
@@ -33,7 +44,19 @@
             <ul>
                 @foreach (var item in multiUrlPickerDyn)
                 {
-                    <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+                    <li>
+                      <a href="@item.Url" target="@item.Target" class="@(item.Type == LinkType.External ? "external" : "internal")">
+                        @if (item.Type == LinkType.Media)
+                        {
+                          <img src="@item.Url" alt="@item.Name" />
+                        }
+                        else
+                        {
+                          @item.Name
+                        }
+                      </a>
+
+                    </li>
                 }
             </ul>
         }
