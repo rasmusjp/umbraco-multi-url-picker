@@ -6,6 +6,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
 
   $scope.renderModel = []
   $scope.cfg = { maxNumberOfItems: 0, minNumberOfItems: 0 }
+  $scope.sortableOptions = { handle: '.handle' }
 
   if( $scope.model.value ) {
     _.each($scope.model.value, function( item, i ) {
