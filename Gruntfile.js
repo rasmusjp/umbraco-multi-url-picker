@@ -33,14 +33,14 @@ module.exports = function (grunt) {
             nuget: {
                 expand: true,
                 cwd: '<%= basePath %>',
-                src: '**',
+                src: '<%= basePath %>',
                 dest: 'tmp/nuget/content/'
             },
 
             umbraco: {
                 expand: true,
                 cwd: '<%= basePath %>/',
-                src: '**',
+                src: '<%= basePath %>',
                 dest: 'tmp/umbraco/'
             },
 

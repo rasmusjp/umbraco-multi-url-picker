@@ -10,14 +10,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
 
   if( $scope.model.value ) {
     _.each($scope.model.value, function( item, i ) {
-      $scope.renderModel.push({
-          name: item.name
-        , id: item.id
-        , url: item.url
-        , target: item.target
-        , isMedia: item.isMedia
-        , icon: item.icon || 'icon-link'
-      })
+      $scope.renderModel.push(new Link(item))
       if( item.id ) {
         (item.isMedia ? mediaIds : documentIds).push( item.id )
       }
@@ -107,14 +100,7 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
 
 
   $scope.onContentSelected = function(e) {
-    var link = {
-          id: e.id
-        , name: e.name
-        , url: e.url
-        , target: e.target
-        , isMedia: e.isMedia
-        , icon: 'icon-link'
-    }
+    var link = new Link(e);
 
     if( e.index != null ) {
       $scope.renderModel[ e.index ] = link
@@ -128,5 +114,14 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
 
     $scope.model.value = $scope.renderModel
     dialogService.closeAll()
+  }
+
+  function Link(link) {
+      this.id = link.id;
+      this.name = link.name || link.url;
+      this.url = link.url;
+      this.target = link.target;
+      this.isMedia = link.isMedia;
+      this.icon = link.icon || 'icon-link';
   }
 })
