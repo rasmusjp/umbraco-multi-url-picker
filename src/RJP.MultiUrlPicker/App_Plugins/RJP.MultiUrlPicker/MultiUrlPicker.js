@@ -113,7 +113,6 @@ angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($s
     }
 
     $scope.model.value = $scope.renderModel
-    dialogService.closeAll()
   }
 
   function Link(link) {

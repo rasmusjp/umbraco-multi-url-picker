@@ -1,6 +1,7 @@
 ﻿{
    propertyEditors: [{ 
        alias: "RJP.MultiUrlPicker"
+     , isParameterEditor: true
      , name:  "Multi Url Picker"
      , editor: {
            view: "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.html"
