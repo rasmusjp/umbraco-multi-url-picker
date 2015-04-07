@@ -103,7 +103,7 @@
     $scope.onContentSelected = function(e) {
       var link = new Link(e);
 
-      if( e.index !== null ) {
+      if( e.index !== undefined && e.index !== null ) {
         $scope.renderModel[ e.index ] = link;
       } else {
         $scope.renderModel.push( link );
