@@ -1,7 +1,5 @@
 ﻿namespace RJP.MultiUrlPicker.Courier
 {
-    #region Usings
-
     using System;
 
     using Newtonsoft.Json;
@@ -10,8 +8,6 @@
     using Umbraco.Courier.Core;
     using Umbraco.Courier.DataResolvers;
     using Umbraco.Courier.ItemProviders;
-
-    #endregion
 
     public class MultiUrlPickerDataResolverProvider : PropertyDataResolverProvider
     {
@@ -34,7 +30,7 @@
                     {
                         if (link.id != null)
                         {
-                            link.id = PersistenceManager.Default.GetUniqueId(
+                            link.id = ExecutionContext.DatabasePersistence.GetUniqueId(
                                 (int)link.id,
                                 link.isMedia != null ? NodeObjectTypes.Media : NodeObjectTypes.Document);
                         }
@@ -55,7 +51,7 @@
                     {
                         if (link.id != null)
                         {
-                            link.id = PersistenceManager.Default.GetNodeId(
+                            link.id = ExecutionContext.DatabasePersistence.GetNodeId(
                                 (Guid)link.id,
                                 link.isMedia != null ? NodeObjectTypes.Media : NodeObjectTypes.Document);
                         }
