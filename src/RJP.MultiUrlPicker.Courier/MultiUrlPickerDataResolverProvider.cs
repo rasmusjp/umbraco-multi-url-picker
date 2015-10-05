@@ -6,6 +6,7 @@
     using Newtonsoft.Json.Linq;
 
     using Umbraco.Courier.Core;
+    using Umbraco.Courier.Core.Logging;
     using Umbraco.Courier.DataResolvers;
     using Umbraco.Courier.ItemProviders;
 
@@ -30,9 +31,27 @@
                     {
                         if (link.id != null)
                         {
-                            link.id = ExecutionContext.DatabasePersistence.GetUniqueId(
-                                (int)link.id,
-                                link.isMedia != null ? NodeObjectTypes.Media : NodeObjectTypes.Document);
+                            var objectTypeId = link.isMedia != null
+                                ? UmbracoNodeObjectTypeIds.Media
+                                : UmbracoNodeObjectTypeIds.Document;
+                            var itemProviderId = link.isMedia != null
+                                ? ItemProviderIds.mediaItemProviderGuid
+                                : ItemProviderIds.documentItemProviderGuid;
+
+                            link.id = ExecutionContext.DatabasePersistence.GetUniqueId((int)link.id, objectTypeId);
+                            item.Dependencies.Add(link.id.ToString(), itemProviderId);
+                        }
+                        else if (link.isMedia != null)
+                        {
+                            try
+                            {
+                                var mediaId = ExecutionContext.DatabasePersistence.GetUniqueIdFromMediaFile(link.url);
+                                item.Dependencies.Add(mediaId.ToString(), ItemProviderIds.mediaItemProviderGuid);
+                            }
+                            catch (Exception e)
+                            {
+                                CourierLogHelper.Error<MultiUrlPickerDataResolverProvider>(string.Format("Error setting media-item dependency, name={0}, url={1}", link.name, link.url), e);
+                            }
                         }
                     }
                     propertyData.Value = links.ToString();
@@ -53,10 +72,10 @@
                         {
                             link.id = ExecutionContext.DatabasePersistence.GetNodeId(
                                 (Guid)link.id,
-                                link.isMedia != null ? NodeObjectTypes.Media : NodeObjectTypes.Document);
+                                link.isMedia != null ? UmbracoNodeObjectTypeIds.Media : UmbracoNodeObjectTypeIds.Document);
                         }
                     }
-                    propertyData.Value = links.ToString();
+                    propertyData.Value = links;
                 }
             }
         }
