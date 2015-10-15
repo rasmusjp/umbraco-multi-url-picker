@@ -29,14 +29,14 @@
       }
     };
 
-      if( documentIds.length ) {
-          entityResource.getByIds( documentIds, 'Document' ).then( setIcon );
-      }
-      if( mediaIds.length ) {
-          entityResource.getByIds( mediaIds, 'Media' ).then( setIcon );
-      }
+    if( documentIds.length ) {
+        entityResource.getByIds( documentIds, 'Document' ).then( setIcon );
+    }
+    if( mediaIds.length ) {
+        entityResource.getByIds( mediaIds, 'Media' ).then( setIcon );
+    }
 
-      if ( $scope.model.config ) {
+    if ( $scope.model.config ) {
       $scope.cfg = angular.extend( $scope.cfg, $scope.model.config );
     }
 
