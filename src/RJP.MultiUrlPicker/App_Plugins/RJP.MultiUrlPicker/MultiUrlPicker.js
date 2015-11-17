@@ -29,9 +29,13 @@
       }
     };
 
-    entityResource.getByIds( documentIds, 'Document' ).then( setIcon );
-    entityResource.getByIds( mediaIds, 'Media' ).then( setIcon );
-
+    if (documentIds.length > 0) {
+        entityResource.getByIds(documentIds, 'Document').then(setIcon);
+    }
+    if (mediaIds.length > 0) {
+        entityResource.getByIds(mediaIds, 'Media').then(setIcon);
+    }
+    
     if ( $scope.model.config ) {
       $scope.cfg = angular.extend( $scope.cfg, $scope.model.config );
     }
