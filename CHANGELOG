@@ -1,3 +1,9 @@
+1.3.2
+=====
+
+  * #48 - Editing a media item breaks the link
+  * #51 - Picked nodes are not resolved when deleted
+
 1.3.1
 =====
 
