@@ -1,7 +1,7 @@
 (function(angular, _) {
   'use strict';
 
-  angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($scope, dialogService, iconHelper, entityResource) {
+  angular.module("umbraco").controller("RJP.MultiUrlPickerController", function($scope, $q, dialogService, iconHelper, entityResource) {
     var documentIds = [];
     var mediaIds = [];
 
@@ -12,26 +12,64 @@
 
     if( $scope.model.value ) {
       _.each($scope.model.value, function( item, i ) {
-        $scope.renderModel.push(new Link(item));
         if( item.id ) {
           (item.isMedia ? mediaIds : documentIds).push( item.id );
         }
       });
     }
 
-    var setIcon = function( nodes ) {
-      if( _.isArray( nodes ) ) {
-        _.each( nodes, setIcon );
-      } else {
-        var item = _.find( $scope.renderModel, function( item ) {
-          return +item.id === nodes.id;
-        });
-        item.icon = iconHelper.convertFromLegacyIcon( nodes.icon );
-      }
+    var setIcon = function( node ) {
+      var item = _.find( $scope.renderModel, function( item ) {
+        return +item.id === node.id;
+      });
+      item.icon = iconHelper.convertFromLegacyIcon( node.icon );
     };
 
-    entityResource.getByIds( documentIds, 'Document' ).then( setIcon );
-    entityResource.getByIds( mediaIds, 'Media' ).then( setIcon );
+    $q.all([
+        entityResource.getByIds(documentIds, 'Document'),
+        entityResource.getByIds(mediaIds, 'Media')
+    ]).then(function (result) {
+        var entities = result[0].concat(result[1]);
+
+        _.each($scope.model.value, function (item) {
+            if (item.id) {
+                var entity = _.find(entities, function (e) {
+                    return e.id == item.id;
+                });
+
+                if (entity) {
+                    item.icon = iconHelper.convertFromLegacyIcon(entity.icon);
+                    $scope.renderModel.push(new Link(item));
+                }
+            } else {
+                $scope.renderModel.push(new Link(item));
+            }
+        });
+
+        $scope.$watch(
+          function () {
+              return $scope.renderModel.length;
+          },
+          function (newVal) {
+              if ($scope.renderModel.length) {
+                  $scope.model.value = $scope.renderModel;
+              } else {
+                  $scope.model.value = null;
+              }
+
+              if ($scope.cfg.minNumberOfItems && +$scope.cfg.minNumberOfItems > $scope.renderModel.length) {
+                  $scope.multiUrlPickerForm.minCount.$setValidity('minCount', false);
+              } else {
+                  $scope.multiUrlPickerForm.minCount.$setValidity('minCount', true);
+              }
+              if ($scope.cfg.maxNumberOfItems && +$scope.cfg.maxNumberOfItems < $scope.renderModel.length) {
+                  $scope.multiUrlPickerForm.maxCount.$setValidity('maxCount', false);
+              } else {
+                  $scope.multiUrlPickerForm.maxCount.$setValidity('maxCount', true);
+              }
+          }
+        );
+    });
 
     if ( $scope.model.config ) {
       $scope.cfg = angular.extend( $scope.cfg, $scope.model.config );
@@ -73,30 +111,6 @@
       $scope.renderModel.splice( index, 1 );
       $scope.model.value = $scope.renderModel;
     };
-
-    $scope.$watch(
-      function() {
-        return $scope.renderModel.length;
-      },
-      function(newVal) {
-        if( $scope.renderModel.length ) {
-          $scope.model.value = $scope.renderModel;
-        } else {
-          $scope.model.value = null;
-        }
-
-        if( $scope.cfg.minNumberOfItems && +$scope.cfg.minNumberOfItems > $scope.renderModel.length ) {
-          $scope.multiUrlPickerForm.minCount.$setValidity( 'minCount', false );
-        } else {
-          $scope.multiUrlPickerForm.minCount.$setValidity( 'minCount', true );
-        }
-         if( $scope.cfg.maxNumberOfItems && +$scope.cfg.maxNumberOfItems < $scope.renderModel.length ) {
-          $scope.multiUrlPickerForm.maxCount.$setValidity( 'maxCount', false );
-        } else {
-          $scope.multiUrlPickerForm.maxCount.$setValidity( 'maxCount', true );
-        }
-      }
-    );
 
     $scope.$on("formSubmitting", function(ev, args) {
       if( $scope.renderModel.length ) {
