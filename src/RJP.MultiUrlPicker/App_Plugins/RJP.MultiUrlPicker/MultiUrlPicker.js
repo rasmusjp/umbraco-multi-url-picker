@@ -8,6 +8,7 @@
     $scope.renderModel = [];
     $scope.cfg = { maxNumberOfItems: 0, minNumberOfItems: 0 };
     $scope.sortableOptions = { handle: '.handle' };
+    $scope.editedMediaId = -1;
 
     if( $scope.model.value ) {
       _.each($scope.model.value, function( item, i ) {
@@ -49,6 +50,12 @@
 
     $scope.edit = function(index) {
       var link = $scope.renderModel[index];
+
+      // store the current edited media id
+      if(link.isMedia && link.id !== null) {
+        $scope.editedMediaId = link.id;
+      }
+
       dialogService.linkPicker({
         currentTarget: {
           id: link.isMedia ? null : link.id, // the linkPicker breaks if it get an id for media
@@ -104,16 +111,22 @@
       var link = new Link(e);
 
       if( e.index !== undefined && e.index !== null ) {
+        if(link.isMedia && link.id === null) {
+          // we can assume the existing media item is changed and no new file has been selected
+          // so we can restorte the existing id
+          link.id = $scope.editedMediaId;
+        }
         $scope.renderModel[ e.index ] = link;
       } else {
         $scope.renderModel.push( link );
       }
 
-      if( e.id && e.id > 0 ) {
-        entityResource.getById( e.id, e.isMedia ? 'Media' : 'Document' ).then( setIcon );
+      if( link.id && link.id > 0 ) {
+        entityResource.getById( link.id, link.isMedia ? 'Media' : 'Document' ).then( setIcon );
       }
 
       $scope.model.value = $scope.renderModel;
+      $scope.editedMediaId = -1;
       dialogService.close();
     };
 
