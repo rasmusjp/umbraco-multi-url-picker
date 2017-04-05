@@ -5,13 +5,26 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Umbraco.Core.Logging;
+using System;
 
 namespace RJP.MultiUrlPicker.Models
 {
+    [Obsolete("Use IEnumerable<Link> instead")]
     public class MultiUrls : IEnumerable<Link>
     {
         private readonly string _propertyData;
         private readonly List<Link> _multiUrls = new List<Link>(); 
+
+        internal MultiUrls()
+        {
+        }
+
+        internal MultiUrls(JArray propertyData)
+        {
+            _propertyData = propertyData.ToString();
+
+            Initialize(propertyData);
+        }
 
         public MultiUrls(string propertyData)
         {
@@ -20,18 +33,23 @@ namespace RJP.MultiUrlPicker.Models
             if (!string.IsNullOrEmpty(propertyData))
             {
                 var relatedLinks = JsonConvert.DeserializeObject<JArray>(propertyData);
-                foreach (var item in relatedLinks)
+                Initialize(relatedLinks);
+            }
+        }
+
+        private void Initialize(JArray data)
+        {
+            foreach (var item in data)
+            {
+                var newLink = new Link(item);
+                if (!newLink.Deleted)
                 {
-                    var newLink = new Link(item);
-                    if (!newLink.Deleted)
-                    {
-                        _multiUrls.Add(new Link(item));
-                    }
-                    else
-                    {
-                        LogHelper.Warn<MultiUrls>(
-                            string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
-                    }
+                    _multiUrls.Add(new Link(item));
+                }
+                else
+                {
+                    LogHelper.Warn<MultiUrls>(
+                        string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
                 }
             }
         }
