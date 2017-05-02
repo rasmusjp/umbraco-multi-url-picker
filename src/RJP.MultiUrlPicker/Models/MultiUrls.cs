@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using Umbraco.Core.Logging;
-using System;
-
-namespace RJP.MultiUrlPicker.Models
+﻿namespace RJP.MultiUrlPicker.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+
+    using Umbraco.Core.Logging;
+
     [Obsolete("Use IEnumerable<Link> instead")]
     public class MultiUrls : IEnumerable<Link>
     {

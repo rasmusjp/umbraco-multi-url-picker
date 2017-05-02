@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-
-using Newtonsoft.Json.Linq;
-
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.PropertyEditors;
-
-using RJP.MultiUrlPicker.Models;
-
-namespace RJP.MultiUrlPicker
+﻿namespace RJP.MultiUrlPicker
 {
+    using System.Collections.Generic;
+
+    using Newtonsoft.Json.Linq;
+
+    using Umbraco.Core.Models.PublishedContent;
+    using Umbraco.Core.PropertyEditors;
+
+    using Models;
+
     [PropertyValueType(typeof(IEnumerable<Link>))]
     [PropertyValueCache(PropertyCacheValue.Source, PropertyCacheLevel.Content)]
     [PropertyValueCache(PropertyCacheValue.Object, PropertyCacheLevel.ContentCache)]

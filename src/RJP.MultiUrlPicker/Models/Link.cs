@@ -1,56 +1,73 @@
-﻿using Newtonsoft.Json.Linq;
-
-using Umbraco.Core.Models;
-using Umbraco.Web;
-
-namespace RJP.MultiUrlPicker.Models
+﻿namespace RJP.MultiUrlPicker.Models
 {
+    using System;
+
+    using Newtonsoft.Json.Linq;
+
+    using Umbraco.Core.Models;
+    using Umbraco.Core;
+
+    using Umbraco.Web;
+    using Umbraco.Web.Extensions;
+
     public class Link
     {
         private readonly JToken _linkItem;
+        private bool _publishedContentInitialized = false;
         private string _name;
-        private int? _id;
         private string _url;
         private string _target;
         private bool? _deleted;
         private LinkType? _linkType;
+        private IPublishedContent _content;
+        private Udi _udi;
+        private int? _id;
 
         public Link(JToken linkItem)
         {
             _linkItem = linkItem;
         }
 
-        private IPublishedContent PublishedItem
+        private IPublishedContent PublishedContent
         {
             get
             {
-                if (Id == null) return null;
-                if (UmbracoContext.Current == null) return null;
-                var umbHelper = new UmbracoHelper(UmbracoContext.Current);
-
-                if  (Type == LinkType.Content)
-                {
-                    return umbHelper.TypedContent(Id.Value);
-                }
-                if (Type == LinkType.Media)
-                {
-                    return umbHelper.TypedMedia(Id.Value);
-                }
-                return null;
+                InitPublishedContent();
+                return _content;
             }
         }
 
+        [Obsolete("Use Udi instead")]
         public int? Id
         {
             get
             {
-                if (_id == null)
+                if(_id == null)
                 {
                     _id = _linkItem.Value<int?>("id");
+                    if(!_id.HasValue)
+                    {
+                        InitPublishedContent();
+                    }
                 }
-                return _id;         
+                return _id;
             } 
 
+        }
+
+        public Udi Udi
+        {
+            get
+            {
+                if(_udi == null)
+                {
+                    if(!Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
+                    {
+                        InitPublishedContent();
+                    }
+                }
+                return _udi;
+            }
         }
 
         public string Name
@@ -71,9 +88,9 @@ namespace RJP.MultiUrlPicker.Models
             {
                 if (_deleted == null)
                 {
-                    if (Id != null)
+                    if (Id.HasValue || Udi != null)
                     {
-                        _deleted = PublishedItem == null;
+                        _deleted = PublishedContent == null;
                     }
                     else
                     {
@@ -90,7 +107,7 @@ namespace RJP.MultiUrlPicker.Models
             {
                 if (string.IsNullOrEmpty(_url))
                 {
-                    _url = PublishedItem != null ? PublishedItem.Url : _linkItem.Value<string>("url");
+                    _url = PublishedContent?.Url ?? _linkItem.Value<string>("url");
                 }
                 return _url;
             }
@@ -109,29 +126,78 @@ namespace RJP.MultiUrlPicker.Models
         }
 
       public LinkType Type
-      {
-          get
-          {
-              if (_linkType == null)
-              {
-                  if (Id.HasValue)
-                  {
-                      if (_linkItem.Value<bool>("isMedia"))
-                      {
-                          _linkType = LinkType.Media;
-                      }
-                      else
-                      {
-                          _linkType = LinkType.Content;
-                      }
-                  }
-                  else
-                  {
-                      _linkType = LinkType.External;
-                  }
-              }
-              return _linkType.Value;
-          }
-      }
+        {
+            get
+            {
+                if (_linkType == null)
+                {
+                    if (Udi != null)
+                    {
+                        if (Udi.EntityType == Constants.UdiEntityType.Media)
+                        {
+                            _linkType = LinkType.Media;
+                        }
+                        else
+                        {
+                            _linkType = LinkType.Content;
+                        }
+                    }
+                    else
+                    {
+                        _linkType = LinkType.External;
+                    }
+                }
+                return _linkType.Value;
+            }
+        }
+
+
+        private void InitPublishedContent()
+        {
+            if (!_publishedContentInitialized)
+            {
+                _publishedContentInitialized = true;
+
+                if (UmbracoContext.Current == null)
+                {
+                    return;
+                }
+
+                var helper = new UmbracoHelper(UmbracoContext.Current);
+
+                if (Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
+                {
+                    _content = _udi.ToPublishedContent();
+                    _id = _content?.Id;
+                }
+                else
+                {
+                    // there were no Udi so let's try the legacy way
+                    _id = _linkItem.Value<int?>("id");
+
+                    if (_id.HasValue)
+                    {
+                        bool isMedia = _linkItem.Value<bool>("isMedia");
+
+                        if (_linkItem.Value<bool>("isMedia"))
+                        {
+                            _content = helper.TypedMedia(_id.Value);
+                            if (_content != null)
+                            {
+                                _udi = Udi.Create(Constants.UdiEntityType.Media, _content.GetKey());
+                            }
+                        }
+                        else
+                        {
+                            _content = helper.TypedContent(_id.Value);
+                            if (_content != null)
+                            {
+                                _udi = Udi.Create(Constants.UdiEntityType.Document, _content.GetKey());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,36 +1,43 @@
-﻿<div ng-controller="RJP.MultiUrlPickerController" class="umb-editor umb-contentpicker">
+﻿<div ng-controller="RJP.MultiUrlPickerController as ctrl" class="umb-editor umb-contentpicker">
     <ng-form name="multiUrlPickerForm">
-        <div ui-sortable="sortableOptions" ng-model="renderModel">
-            <umb-node-preview ng-repeat="node in renderModel"
-                              icon="node.icon"
-                              name="node.name"
-                              published="node.published"
-                              description="node.url"
-                              sortable="true"
-                              allow-remove="true"
-                              allow-open="true"
-                              on-remove="remove($index)"
-                              on-open="edit($index)">
-            </umb-node-preview>
+        <div ui-sortable="ctrl.sortableOptions" ng-model="ctrl.renderModel">
+            <div ng-repeat="link in ctrl.renderModel">
+                <umb-node-preview icon="link.icon"
+                                  name="link.name"
+                                  published="link.published"
+                                  description="link.url"
+                                  sortable="!ctrl.sortableOptions.disabled"
+                                  allow-remove="true"
+                                  allow-open="true"
+                                  on-remove="ctrl.remove($index)"
+                                  on-open="ctrl.openLinkPicker(link, $index)">
+                </umb-node-preview>
+            </div>
         </div>
 
-        <a ng-show="!cfg.maxNumberOfItems || renderModel.length < cfg.maxNumberOfItems"
+        <a ng-show="!model.config.maxNumberOfItems || ctrl.renderModel.length < model.config.maxNumberOfItems"
            class="umb-node-preview-add"
-           href=""
-           ng-click="openLinkPicker()"
+           href
+           ng-click="ctrl.openLinkPicker()"
            prevent-default>
             <localize key="general_add">Add</localize>
         </a>
 
-        <input type="hidden" name="minCount" ng-model="renderModel" />
-        <input type="hidden" name="maxCount" ng-model="renderModel" />
+        <input type="hidden" name="minCount" ng-model="ctrl.renderModel" />
+        <input type="hidden" name="maxCount" ng-model="ctrl.renderModel" />
 
         <div class="help-inline" val-msg-for="minCount" val-toggle-msg="minCount">
-            You need to add at least {{cfg.minNumberOfItems}} items
+            You need to add at least {{model.config.minNumberOfItems}} items
         </div>
 
         <div class="help-inline" val-msg-for="maxCount" val-toggle-msg="maxCount">
             You can only have {{model.config.maxNumberOfItems}} items selected
         </div>
     </ng-form>
+
+    <umb-overlay ng-if="ctrl.linkPickerOverlay.show"
+                 model="ctrl.linkPickerOverlay"
+                 view="ctrl.linkPickerOverlay.view"
+                 position="right">
+    </umb-overlay>
 </div>
