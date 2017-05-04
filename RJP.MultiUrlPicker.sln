@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{F960CEAB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJP.MultiUrlPicker", "src\RJP.MultiUrlPicker\RJP.MultiUrlPicker.csproj", "{2553C499-3593-43ED-95D6-39B03CC61ED1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJP.MultiUrlPicker.Courier", "src\RJP.MultiUrlPicker.Courier\RJP.MultiUrlPicker.Courier.csproj", "{7893EFE1-6D7B-4978-A859-F9F955FFB141}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,10 +22,6 @@ Global
 		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2553C499-3593-43ED-95D6-39B03CC61ED1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7893EFE1-6D7B-4978-A859-F9F955FFB141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7893EFE1-6D7B-4978-A859-F9F955FFB141}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7893EFE1-6D7B-4978-A859-F9F955FFB141}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7893EFE1-6D7B-4978-A859-F9F955FFB141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
