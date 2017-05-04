@@ -1,0 +1,35 @@
+﻿<div class="umb-contentpicker umb-editor" ng-controller="RJP.MultiUrlPickerController">
+  <ng-form name="multiUrlPickerForm">
+    <ul class="unstyled list-icons" ui-sortable="sortableOptions" ng-model="renderModel">
+      <li ng-repeat="node in renderModel">
+        <i ng-if="renderModel.length > 1" class="icon icon-navigation handle"></i>
+        <a href="#" prevent-default ng-click="remove($index)"><i class="icon-delete red"></i></a>
+        <a href="#" prevent-default ng-click="edit($index)">
+          <i class="icon icon-edit hover-show"></i>
+          <i class="{{node.icon}} hover-hide"></i> 
+          {{node.name}}
+        </a>
+      </li>
+    </ul>
+
+    <ul class="unstyled list-icons" ng-show="!cfg.maxNumberOfItems || renderModel.length < cfg.maxNumberOfItems">
+      <li>
+        <i class="icon icon-add blue"></i>
+        <a href="#" ng-click="openLinkPicker()" prevent-default>
+          <localize key="general_add">Add</localize>
+        </a>
+      </li>
+    </ul>
+
+    <input type="hidden" name="minCount" ng-model="renderModel">
+    <input type="hidden" name="maxCount" ng-model="renderModel">
+
+    <div class="help-inline" val-msg-for="minCount" val-toggle-msg="minCount">
+        You need to add at least {{cfg.minNumberOfItems-renderModel.length}} more item(s)
+    </div>
+    
+    <div class="help-inline" val-msg-for="maxCount" val-toggle-msg="maxCount">
+        You can only have {{cfg.maxNumberOfItems}} item(s) selected
+    </div>
+  </ng-form>
+</div>
