@@ -19,6 +19,6 @@
     </metadata>
     <files>
       <file src="..\..\artifacts\RJP.MultiUrlPicker\RJP.MultiUrlPicker.dll" target="lib\net45" />
-      <file src="..\..\src\RJP.MultiUrlPicker.Web.UI\**\*" target="content" />
+      <file src="..\..\src\RJP.MultiUrlPicker.Web.UI\**\*" target="content\App_Plugins\RJP.MultiUrlPicker" />
     </files>
 </package>
