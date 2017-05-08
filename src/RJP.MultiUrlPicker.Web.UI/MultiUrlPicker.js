@@ -34,13 +34,16 @@
       distance: 10,
       tolerance: 'pointer',
       scroll: true,
-      zIndex: 6000
+      zIndex: 6000,
+      update: function () {
+        angularHelper.getCurrentForm($scope).$setDirty()
+      }
     }
 
     this.remove = function ($index) {
       this.renderModel.splice($index, 1)
 
-      angularHelper.getCurrentForm($scope).$setDirty();
+      angularHelper.getCurrentForm($scope).$setDirty()
     }
 
     this.openLinkPicker = function (link, $index) {
@@ -98,7 +101,7 @@
               link.icon = 'icon-link'
             }
 
-            angularHelper.getCurrentForm($scope).$setDirty();
+            angularHelper.getCurrentForm($scope).$setDirty()
           }
 
           this.linkPickerOverlay.show = false
