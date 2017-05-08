@@ -9,6 +9,7 @@
 
     using Umbraco.Web;
     using Umbraco.Web.Extensions;
+    using Umbraco.Core.Models.PublishedContent;
 
     public class Link
     {
@@ -42,16 +43,16 @@
         {
             get
             {
-                if(_id == null)
+                if (_id == null)
                 {
                     _id = _linkItem.Value<int?>("id");
-                    if(!_id.HasValue)
+                    if (!_id.HasValue)
                     {
                         InitPublishedContent();
                     }
                 }
                 return _id;
-            } 
+            }
 
         }
 
@@ -59,9 +60,9 @@
         {
             get
             {
-                if(_udi == null)
+                if (_udi == null)
                 {
-                    if(!Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
+                    if (!Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
                     {
                         InitPublishedContent();
                     }
@@ -95,7 +96,7 @@
                     else
                     {
                         _deleted = false;
-                    }     
+                    }
                 }
                 return (bool)_deleted;
             }
@@ -125,7 +126,7 @@
             }
         }
 
-      public LinkType Type
+        public LinkType Type
         {
             get
             {
@@ -163,8 +164,6 @@
                     return;
                 }
 
-                var helper = new UmbracoHelper(UmbracoContext.Current);
-
                 if (Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
                 {
                     _content = _udi.ToPublishedContent();
@@ -172,6 +171,8 @@
                 }
                 else
                 {
+                    var helper = new UmbracoHelper(UmbracoContext.Current);
+
                     // there were no Udi so let's try the legacy way
                     _id = _linkItem.Value<int?>("id");
 
@@ -182,20 +183,38 @@
                         if (_linkItem.Value<bool>("isMedia"))
                         {
                             _content = helper.TypedMedia(_id.Value);
-                            if (_content != null)
-                            {
-                                _udi = Udi.Create(Constants.UdiEntityType.Media, _content.GetKey());
-                            }
                         }
                         else
                         {
                             _content = helper.TypedContent(_id.Value);
-                            if (_content != null)
-                            {
-                                _udi = Udi.Create(Constants.UdiEntityType.Document, _content.GetKey());
-                            }
                         }
+                        SetUdi();
                     }
+                }
+            }
+        }
+
+        private void SetUdi()
+        {
+            if (_content != null && _udi == null)
+            {
+                Guid? key = _content.GetKey();
+                if (key == Guid.Empty)
+                {
+                    // if the key is Guid.Empty the model might be created by the ModelsBuilder,
+                    // if so it, by default, derives from PublishedContentModel.
+                    // By calling UnWrap() we get the original content, which probably implements
+                    // IPublishedContentWithKey, so we can get the key
+                    key = (_content as PublishedContentWrapped)?.Unwrap().GetKey();
+                }
+
+                if (key.HasValue && key != Guid.Empty)
+                {
+                    string udiType = _content.ItemType == PublishedItemType.Media ?
+                        Constants.UdiEntityType.Media :
+                        Constants.UdiEntityType.Document;
+
+                    _udi = Udi.Create(udiType, key.Value);
                 }
             }
         }
