@@ -14,7 +14,7 @@
     <copyright>Copyright 2014 Rasmus John Pedersen</copyright>
     <tags>umbraco, urlpicker, multiurlpicker</tags>
     <dependencies>
-      <dependency id="UmbracoCms" version="[7.6.0, 8.0.0)"/>
+      <dependency id="UmbracoCms.Core" version="[7.6.0, 8.0.0)"/>
     </dependencies>
     </metadata>
     <files>
