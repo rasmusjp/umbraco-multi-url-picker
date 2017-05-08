@@ -21,9 +21,12 @@
     $scope.$watch(function () {
       return this.renderModel.length
     }.bind(this), function () {
-      $scope.multiUrlPickerForm.minCount.$setValidity('minCount', $scope.model.config && $scope.model.config.minNumberOfItems && +$scope.model.config.minNumberOfItems <= this.renderModel.length)
-      $scope.multiUrlPickerForm.maxCount.$setValidity("maxCount", $scope.model.config && $scope.model.config.maxNumberOfItems && +$scope.model.config.maxNumberOfItems >= this.renderModel.length)
-
+      if ($scope.model.config && $scope.model.config.minNumberOfItems) {
+        $scope.multiUrlPickerForm.minCount.$setValidity('minCount', +$scope.model.config.minNumberOfItems <= this.renderModel.length)
+      }
+      if ($scope.model.config && $scope.model.config.maxNumberOfItems) {
+        $scope.multiUrlPickerForm.maxCount.$setValidity("maxCount", +$scope.model.config.maxNumberOfItems >= this.renderModel.length)
+      }
       this.sortableOptions.disabled = this.renderModel.length === 1
     }.bind(this))
 
