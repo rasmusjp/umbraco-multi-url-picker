@@ -3,52 +3,32 @@
 Allows editors to pick and sort multiple urls, it uses Umbraco's link picker which supports internal and external links and media. 
 
 ## Installation
-v1.0.0 only works with Umbraco 7.1.2 and newer.
-
-Install the [package](http://our.umbraco.org/projects/backoffice-extensions/multi-url-picker) from the Umbraco package repository.
-
-or
 
 Install the NuGet [package](https://www.nuget.org/packages/RJP.UmbracoMultiUrlPicker).
 
+or
+
+Install the [package](http://our.umbraco.org/projects/backoffice-extensions/multi-url-picker) from the Umbraco package repository.
+
 ## Usage
 
-Create a new Data Type and select the "Multi Url Picker" property editor.
+Add a new property to your document type and select the `Multi Url Picker` property editor in the `pickers` category.
 
-### Typed
+If you're using the models builder, you can access the property on your model e.g. `Model.Links` if your property alias is `links`.
 
-Add a reference to RJP.MultiUrlPicker.dll in your project
+```csharp
+@{ var links = Model.Links.ToList(); }
 
-```
-@{
-  var multiUrlPicker = Model.Content.GetPropertyValue<MultiUrls>("multiUrlPicker");
-  if (multiUrlPicker.Any())
-  {
-    <ul>
-      @foreach (var item in multiUrlPicker)
-      {
-        <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
-      }
+@if (links.Count > 0)
+{
+  <ul>
+    @foreach (var item in links)
+    {
+      <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
+    }
     </ul>
-  }
-}
-```
-
-### Dynamic
-```
-@{
-  var multiUrlPickerDyn = CurrentPage.multiUrlPicker;
-  if (multiUrlPickerDyn.Any())
-  {
-    <ul>
-      @foreach (var item in multiUrlPickerDyn)
-      {
-        <li><a href="@item.Url" target="@item.Target">@item.Name</a></li>
-      }
-    </ul>
-  }
 }
 ```
 
 ## Changelog
-See the [changelog here](CHANGELOG)
+See the [changelog here](CHANGELOG.md)
