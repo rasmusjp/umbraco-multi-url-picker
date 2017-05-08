@@ -274,6 +274,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Information.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\LinkDisplay.cs" />
     <Compile Include="Models\LinkDto.cs" />

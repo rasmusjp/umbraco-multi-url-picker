@@ -28,6 +28,22 @@
         Group ="pickers", Icon = "icon-link", IsParameterEditor = true)]
     public class MultiUrlPickerPropertyEditor : PropertyEditor
     {
+        private IDictionary<string, object> _defaultPreValues;
+
+        public MultiUrlPickerPropertyEditor()
+        {
+            _defaultPreValues = new Dictionary<string, object>
+            {
+                {"version", Information.Version.ToString(3)},
+            };
+        }
+
+        public override IDictionary<string, object> DefaultPreValues
+        {
+            get { return _defaultPreValues; }
+            set { _defaultPreValues = value; }
+        }
+
         protected override PreValueEditor CreatePreValueEditor()
         {
             return new MultiUrlPickerPreValueEditor();
@@ -45,6 +61,20 @@
 
             [PreValueField("maxNumberOfItems", "Max number of items", "number")]
             public int? MaxNumberOfItems { get; set; }
+
+            [PreValueField("version", "Multi Url Picker version", "hidden", HideLabel = true)]
+            public string Version { get; set; }
+
+            public override IDictionary<string, object> ConvertDbToEditor(IDictionary<string, object> defaultPreVals, PreValueCollection persistedPreVals)
+            {
+                // if there isn't a version stored set it to 0 for backwards compatibility
+                if(!persistedPreVals.PreValuesAsDictionary.ContainsKey("version"))
+                {
+                    persistedPreVals.PreValuesAsDictionary["version"] = new PreValue("0");
+                }
+
+                return base.ConvertDbToEditor(defaultPreVals, persistedPreVals);
+            }
         }
 
         private class MultiUrlPickerPropertyValueEditor : PropertyValueEditorWrapper

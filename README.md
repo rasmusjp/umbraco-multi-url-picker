@@ -30,5 +30,15 @@ If you're using the models builder, you can access the property on your model e.
 }
 ```
 
+If `Max number of items` is configured to 1
+
+```csharp
+@if(Model.Link != null)
+{
+  <a href="@Model.Link.Url" target="@Model.Link.Target">@Model.Link.Name</a>
+}
+
+```
+
 ## Changelog
 See the [changelog here](CHANGELOG.md)

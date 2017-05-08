@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
   * Updated styling to match Umbraco v7.6
   * Added Udi support
+  * New data types with `max number of items` set to 1 will return a single `Link` or `null`.  
+    Existing data types will continue to return `IEnumerable<Link>`
 
 ### Breaking
 
