@@ -12,7 +12,6 @@ let packageFiles =
   |> Seq.concat
 
 let version = environVarOrFail "release"
-let fileVersion = sprintf "%s.*" version
 let informationalVersion =
   if hasBuildParam "buildVersion" then sprintf "%s-%s" version (environVar "buildVersion")
   else version
@@ -55,8 +54,7 @@ Target "RestoreUiPackages" (fun _ ->
 Target "AssemblyInfo" (fun _ ->
   ReplaceAssemblyInfoVersionsBulk assemblyInfos (fun f ->
       { f with
-          AssemblyVersion = version
-          AssemblyFileVersion = fileVersion
+          AssemblyVersion = sprintf "%s.*" version
           AssemblyInformationalVersion = informationalVersion })
 )
 
