@@ -9,6 +9,10 @@
       return
     }
 
+    if (!Array.isArray($scope.model.value)) {
+      $scope.model.value = []
+    }
+
     $scope.model.value.forEach(function (link) {
       link.icon = iconHelper.convertFromLegacyIcon(link.icon)
       this.renderModel.push(link)
