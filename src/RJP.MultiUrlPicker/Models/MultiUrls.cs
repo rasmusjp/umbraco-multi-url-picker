@@ -19,37 +19,37 @@
         {
         }
 
-        internal MultiUrls(JArray propertyData)
+        internal MultiUrls(JArray propertyData, string requestingUrl)
         {
             _propertyData = propertyData.ToString();
 
-            Initialize(propertyData);
+            Initialize(propertyData, requestingUrl);
         }
 
-        public MultiUrls(string propertyData)
+        public MultiUrls(string propertyData, string requestingUrl)
         {
             _propertyData = propertyData;
 
             if (!string.IsNullOrEmpty(propertyData))
             {
                 var relatedLinks = JsonConvert.DeserializeObject<JArray>(propertyData);
-                Initialize(relatedLinks);
+                Initialize(relatedLinks, requestingUrl);
             }
         }
 
-        private void Initialize(JArray data)
+        private void Initialize(JArray data, string requestingUrl)
         {
             foreach (var item in data)
             {
                 var newLink = new Link(item);
                 if (!newLink.Deleted)
                 {
-                    _multiUrls.Add(new Link(item));
+                    _multiUrls.Add(newLink);
                 }
                 else
                 {
                     LogHelper.Warn<MultiUrls>(
-                        string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
+                        string.Format("MultiUrlPicker value converter skipped a link as the node has been unpublished/deleted (Udi: {0}, Request: {1})", newLink.Udi, requestingUrl));
                 }
             }
         }
