@@ -13,10 +13,12 @@
       $scope.model.value = []
     }
 
-    $scope.model.value.forEach(function (link) {
-      link.icon = iconHelper.convertFromLegacyIcon(link.icon)
-      this.renderModel.push(link)
-    }.bind(this))
+    if ($scope.model.value) {
+        $scope.model.value.forEach(function (link) {
+            link.icon = iconHelper.convertFromLegacyIcon(link.icon)
+            this.renderModel.push(link)
+        }.bind(this))
+    }
 
     $scope.$on('formSubmitting', function () {
       $scope.model.value = this.renderModel
