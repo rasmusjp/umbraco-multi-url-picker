@@ -109,6 +109,12 @@
                 if (string.IsNullOrEmpty(_url))
                 {
                     _url = PublishedContent?.Url ?? _linkItem.Value<string>("url");
+
+                    var qs = _linkItem.Value<string>("querystring");
+                    if (!string.IsNullOrWhiteSpace(qs))
+                    {
+                        _url += qs;
+                    }
                 }
                 return _url;
             }

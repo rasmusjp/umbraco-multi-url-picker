@@ -28,6 +28,9 @@
         [DataMember(Name = "url")]
         public string Url { get; set; }
 
+        [DataMember(Name = "querystring")]
+        public string Querystring { get; set; }
+
         internal bool Published { get; set; }
     }
 }

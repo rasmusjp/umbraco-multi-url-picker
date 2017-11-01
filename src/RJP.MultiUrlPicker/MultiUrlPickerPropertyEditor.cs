@@ -216,6 +216,7 @@
                                 Published = published,
                                 Udi = udi,
                                 Url = url,
+                                Querystring = dto.Querystring
                             });
                         }
                         else
@@ -226,7 +227,8 @@
                                 Name = dto.Name,
                                 Published = true,
                                 Target = dto.Target,
-                                Url = dto.Url
+                                Url = dto.Url,
+                                Querystring = dto.Querystring
                             });
                         }
                     }
@@ -258,7 +260,8 @@
                             Name = link.Name,
                             Target = link.Target,
                             Udi = link.Udi,
-                            Url = link.Udi == null ? link.Url : null // only save the url for external links
+                            Url = link.Udi == null ? link.Url : null, // only save the url for external links
+                            Querystring = link.Querystring
                         },
                         new JsonSerializerSettings
                         {
