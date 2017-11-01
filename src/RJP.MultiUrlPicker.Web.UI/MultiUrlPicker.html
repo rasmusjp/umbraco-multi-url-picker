@@ -5,7 +5,7 @@
                 <umb-node-preview icon="link.icon"
                                   name="link.name"
                                   published="link.published"
-                                  description="link.url + link.querystring"
+                                  description="link.url + (link.querystring ? link.querystring : '')"
                                   sortable="!ctrl.sortableOptions.disabled"
                                   allow-remove="true"
                                   allow-open="true"
