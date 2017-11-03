@@ -57,6 +57,7 @@
         id: link.isMedia ? null : link.id,
         udi: link.isMedia ? null : link.udi,
         url: link.url,
+        querystring: link.querystring,
         target: link.target
       } : null
 
@@ -65,6 +66,7 @@
         view: 'linkpicker',
         currentTarget: target,
         show: true,
+        querystring: true,
         submit: function (model) {
           if (model.target.url) {
             if (link) {
@@ -80,6 +82,7 @@
               link.name = model.target.name || model.target.url
               link.target = model.target.target
               link.url = model.target.url
+              link.querystring = model.target.querystring
             } else {
               link = {
                 id: model.target.id,
@@ -87,7 +90,8 @@
                 name: model.target.name || model.target.url,
                 target: model.target.target,
                 udi: model.target.udi,
-                url: model.target.url
+                url: model.target.url,
+                querystring: model.target.querystring
               }
               this.renderModel.push(link)
             }
@@ -115,6 +119,27 @@
     }
   }
 
-  angular.module('umbraco')
-  .controller('RJP.MultiUrlPickerController', MultiUrlPickerController)
+  angular.module('umbraco').controller('RJP.MultiUrlPickerController', MultiUrlPickerController)
+
+  function mupHttpProvider($httpProvider) {
+        
+        $httpProvider.interceptors.push(function ($q) {
+            return {
+                'response': function (response) {
+                    if (response.config.url.indexOf("views/common/overlays/linkpicker/linkpicker.html") !== -1) {
+                        // Inject the querystring field
+                        var $markup = $(response.data);
+                        var $urlField = $markup.find("[label=\"@defaultdialogs_urlLinkPicker\"]");
+                        $urlField.after("<umb-control-group label='Query String' ng-if='model.querystring'><input type='text' placeholder='Query String' class='umb-editor umb-textstring' ng-model='model.target.querystring'/></umb-control-group>");
+                        response.data = $markup[0];
+                    }
+                    return response;
+                }
+            };
+        });
+
+    }
+
+    angular.module("umbraco.services").config(['$httpProvider', mupHttpProvider]);
+
 })()
