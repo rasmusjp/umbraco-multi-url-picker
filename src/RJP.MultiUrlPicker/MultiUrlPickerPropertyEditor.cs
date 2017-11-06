@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker
+namespace RJP.MultiUrlPicker
 {
     using System;
     using System.Collections.Generic;
@@ -34,6 +34,8 @@
         {
             _defaultPreValues = new Dictionary<string, object>
             {
+                {"minNumberOfItems", null},
+                {"maxNumberOfItems", null},
                 {"version", Information.Version.ToString(3)},
             };
         }
