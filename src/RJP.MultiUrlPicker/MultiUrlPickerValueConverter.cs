@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker
+namespace RJP.MultiUrlPicker
 {
     using System;
     using System.Linq;
@@ -16,7 +16,16 @@
 
     public class MultiUrlPickerValueConverter : PropertyValueConverterBase, IPropertyValueConverterMeta
     {
-        private static int _maxNumberOfItems;
+        private readonly IDataTypeService _dataTypeService;
+
+        public MultiUrlPickerValueConverter(IDataTypeService dataTypeService)
+        {
+            _dataTypeService = dataTypeService;
+        }
+
+        public MultiUrlPickerValueConverter() : this(ApplicationContext.Current.Services.DataTypeService)
+        {
+        }
 
         public override bool IsConverter(PublishedPropertyType propertyType)
         {
@@ -34,7 +43,7 @@
 
         public override object ConvertSourceToObject(PublishedPropertyType propertyType, object source, bool preview)
         {
-            bool isMultiple = IsMultipleDataType(propertyType.DataTypeId);
+            bool isMultiple = IsMultipleDataType(propertyType.DataTypeId, out int maxNumberOfItems);
             if (source == null)
             {
                 return isMultiple ? new MultiUrls() : null;
@@ -43,9 +52,9 @@
             var urls = new MultiUrls((JArray)source);
             if(isMultiple)
             {
-                if(_maxNumberOfItems > 0)
+                if(maxNumberOfItems > 0)
                 {
-                    return urls.Take(_maxNumberOfItems);
+                    return urls.Take(maxNumberOfItems);
                 }
                 return urls;
             }
@@ -54,7 +63,7 @@
 
         public Type GetPropertyValueType(PublishedPropertyType propertyType)
         {
-            if (IsMultipleDataType(propertyType.DataTypeId))
+            if (IsMultipleDataType(propertyType.DataTypeId, out int maxNumberOfItems))
             {
                 return typeof(IEnumerable<Link>);
             }
@@ -75,16 +84,14 @@
             return PropertyCacheLevel.None;
         }
 
-        private static bool IsMultipleDataType(int dataTypeId)
+        private bool IsMultipleDataType(int dataTypeId, out int maxNumberOfItems)
         {
-            IDataTypeService dataTypeService = ApplicationContext.Current.Services.DataTypeService;
-            IDictionary<string, PreValue> preValues = dataTypeService
+            IDictionary<string, PreValue> preValues = _dataTypeService
                 .GetPreValuesCollectionByDataTypeId(dataTypeId)
                 .PreValuesAsDictionary;
 
-            PreValue maxNumberOfItems;
-            if (preValues.TryGetValue("maxNumberOfItems", out maxNumberOfItems) &&
-                int.TryParse(maxNumberOfItems.Value, out _maxNumberOfItems))
+            if (preValues.TryGetValue("maxNumberOfItems", out PreValue maxNumberOfItemsPreValue) &&
+                int.TryParse(maxNumberOfItemsPreValue.Value, out maxNumberOfItems))
             {
                 PreValue versionPreValue;
                 Version version;
@@ -94,9 +101,11 @@
                     Version.TryParse(versionPreValue.Value, out version)
                     && version >= new Version(2, 0, 0))
                 {
-                    return _maxNumberOfItems != 1;
+                    return maxNumberOfItems != 1;
                 }
             }
+
+            maxNumberOfItems = 0;
             return true;
         }
     }
