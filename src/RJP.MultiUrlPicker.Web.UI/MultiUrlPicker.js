@@ -2,7 +2,6 @@
   'use strict'
 
   var MultiUrlPickerController = function ($scope, angularHelper, entityResource, iconHelper) {
-
     this.renderModel = []
 
     if ($scope.preview) {
@@ -29,7 +28,7 @@
         $scope.multiUrlPickerForm.minCount.$setValidity('minCount', +$scope.model.config.minNumberOfItems <= this.renderModel.length)
       }
       if ($scope.model.config && $scope.model.config.maxNumberOfItems) {
-        $scope.multiUrlPickerForm.maxCount.$setValidity("maxCount", +$scope.model.config.maxNumberOfItems >= this.renderModel.length)
+        $scope.multiUrlPickerForm.maxCount.$setValidity('maxCount', +$scope.model.config.maxNumberOfItems >= this.renderModel.length)
       }
       this.sortableOptions.disabled = this.renderModel.length === 1
     }.bind(this))
@@ -119,27 +118,23 @@
     }
   }
 
+  var mupHttpProvider = function ($httpProvider) {
+    $httpProvider.interceptors.push(function ($q) {
+      return {
+        response: function (response) {
+          if (response.config.url.indexOf('views/common/overlays/linkpicker/linkpicker.html') !== -1) {
+            // Inject the querystring field
+            var $markup = $(response.data)
+            var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"]')
+            $urlField.after('<umb-control-group label="Query String" ng-if="model.querystring"><input type="text" placeholder="Query String" class="umb-editor umb-textstring" ng-model="model.target.querystring"/></umb-control-group>')
+            response.data = $markup[0]
+          }
+          return response
+        }
+      }
+    })
+  }
+
   angular.module('umbraco').controller('RJP.MultiUrlPickerController', MultiUrlPickerController)
-
-  function mupHttpProvider($httpProvider) {
-        
-        $httpProvider.interceptors.push(function ($q) {
-            return {
-                'response': function (response) {
-                    if (response.config.url.indexOf("views/common/overlays/linkpicker/linkpicker.html") !== -1) {
-                        // Inject the querystring field
-                        var $markup = $(response.data);
-                        var $urlField = $markup.find("[label=\"@defaultdialogs_urlLinkPicker\"]");
-                        $urlField.after("<umb-control-group label='Query String' ng-if='model.querystring'><input type='text' placeholder='Query String' class='umb-editor umb-textstring' ng-model='model.target.querystring'/></umb-control-group>");
-                        response.data = $markup[0];
-                    }
-                    return response;
-                }
-            };
-        });
-
-    }
-
-    angular.module("umbraco.services").config(['$httpProvider', mupHttpProvider]);
-
+  angular.module("umbraco.services").config(['$httpProvider', mupHttpProvider]);
 })()
