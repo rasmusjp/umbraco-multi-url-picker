@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+# 2.1.0
+### Features
+
+  * #45 - Feature Request : Querystring Parameters. Thanks to @mattbrailsford
+  * No more "Could not find persisted pre-value for field (minNumberOfItems|maxNumberOfItems)" warnings in the Umbraco log
+
+### Bugfixes
+
+  * #60 - Only returns first item on startup
+
 # 2.0.1
 ### Bugfixes
 
