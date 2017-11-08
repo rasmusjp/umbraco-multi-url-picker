@@ -1,3 +1,6 @@
+using Umbraco.Core.Logging;
+using Umbraco.Core.PropertyEditors.ValueConverters;
+
 namespace RJP.MultiUrlPicker
 {
     using System;
@@ -34,11 +37,23 @@ namespace RJP.MultiUrlPicker
 
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
         {
-            if (string.IsNullOrEmpty(source?.ToString()))
+            if (string.IsNullOrWhiteSpace(source?.ToString()))
             {
                 return null;
             }
-            return JArray.Parse(source.ToString());
+
+            if (source.ToString().Trim().StartsWith("["))
+            {
+                try
+                {
+                    return JArray.Parse(source.ToString());
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error<DropdownListMultipleValueConverter>("Error parsing JSON", ex);
+                }
+            }
+            return null;
         }
 
         public override object ConvertSourceToObject(PublishedPropertyType propertyType, object source, bool preview)
