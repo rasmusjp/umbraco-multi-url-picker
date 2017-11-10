@@ -50,7 +50,7 @@ namespace RJP.MultiUrlPicker
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error<DropdownListMultipleValueConverter>("Error parsing JSON", ex);
+                    LogHelper.Error<MultiUrlPickerValueConverter>("Error parsing JSON", ex);
                 }
             }
             return null;
