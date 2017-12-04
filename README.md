@@ -1,5 +1,8 @@
 # Multi Url Picker for Umbraco 7
 
+[![NuGet release](https://img.shields.io/nuget/v/RJP.UmbracoMultiUrlPicker.svg)](https://www.nuget.org/packages/RJP.UmbracoMultiUrlPicker) 
+[![Our Umbraco project page](https://img.shields.io/badge/our-umbraco-orange.svg)](https://our.umbraco.org/projects/backoffice-extensions/multi-url-picker)
+
 Allows editors to pick and sort multiple urls, it uses Umbraco's link picker which supports internal and external links and media. 
 
 ## Installation
