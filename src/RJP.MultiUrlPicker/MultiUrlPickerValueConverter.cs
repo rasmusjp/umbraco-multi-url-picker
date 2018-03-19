@@ -14,6 +14,7 @@ namespace RJP.MultiUrlPicker
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Core.PropertyEditors;
     using Umbraco.Core.Services;
+    using Umbraco.Web;
 
     using Models;
 
@@ -64,7 +65,7 @@ namespace RJP.MultiUrlPicker
                 return isMultiple ? new MultiUrls() : null;
             }
 
-            var urls = new MultiUrls((JArray)source);
+            var urls = new MultiUrls((JArray)source, UmbracoContext.Current.PublishedContentRequest.Uri.ToString());
             if(isMultiple)
             {
                 if(maxNumberOfItems > 0)
