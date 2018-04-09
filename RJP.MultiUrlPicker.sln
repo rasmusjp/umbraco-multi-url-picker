@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{F960CEAB-2C15-4617-9BA9-68E8CEBD9920}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{F960CEAB-2C15-4617-9BA9-68E8CEBD9920}"
 	ProjectSection(SolutionItems) = preProject
 		CHANGELOG.md = CHANGELOG.md
 		LICENSE = LICENSE
@@ -11,6 +11,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{F960CEAB
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RJP.MultiUrlPicker", "src\RJP.MultiUrlPicker\RJP.MultiUrlPicker.csproj", "{2553C499-3593-43ED-95D6-39B03CC61ED1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RJP.MultiUrlPicker.Web.UI", "RJP.MultiUrlPicker.Web.UI", "{261C0142-E82A-4B60-B8A9-3A78A6A66C81}"
+	ProjectSection(SolutionItems) = preProject
+		src\RJP.MultiUrlPicker.Web.UI\MultiUrlPicker.html = src\RJP.MultiUrlPicker.Web.UI\MultiUrlPicker.html
+		src\RJP.MultiUrlPicker.Web.UI\MultiUrlPicker.js = src\RJP.MultiUrlPicker.Web.UI\MultiUrlPicker.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{537BC621-7AE3-4BCB-976A-E4BCA95EBDD8}"
+	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		build.fsx = build.fsx
+		build\nuspec\RJP.UmbracoMultiUrlPicker.nuspec = build\nuspec\RJP.UmbracoMultiUrlPicker.nuspec
+		build\version.txt = build\version.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93AF4399-1CA6-43DE-8632-C4D42745839D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,5 +46,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB76B347-638E-4CDF-903E-B532D7D50E21}
 	EndGlobalSection
 EndGlobal

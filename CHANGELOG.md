@@ -1,11 +1,10 @@
 # Change log
-All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
 # 2.1.0
 ### Features
 
-  * #45 - Feature Request : Querystring Parameters. Thanks to @mattbrailsford
+  * #45 - Feature Request: query string parameters. Thanks to @mattbrailsford
   * No more "Could not find persisted pre-value for field (minNumberOfItems|maxNumberOfItems)" warnings in the Umbraco log
 
 ### Bugfixes
@@ -15,14 +14,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 # 2.0.1
 ### Bugfixes
 
-  * #54 - Multi Url Picker cant add nodes
+  * #54 - Multi URL Picker can't add nodes
 
 # 2.0.0
 ### Features
 
   * Updated styling to match Umbraco v7.6
-  * Added Udi support
-  * New data types with `max number of items` set to 1 will return a single `Link` or `null`.  
+  * Added UDI support
+  * New data types with `max number of items` set to 1 will return a single `Link` or `null`
     Existing data types will continue to return `IEnumerable<Link>`
 
 ### Breaking
@@ -52,16 +51,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 # 1.2.0
 ### Features
 
-  * #14 - Use url as name when Page Title is left empty
+  * #14 - Use URL as name when page title is left empty
 
 # 1.1.0
 ### Features
 
-  * #8 - Hide handle when only one item.
+  * #8 - Hide handle when only one item
 
 ### Bugfixes
 
-  * #11 - Validation problem with min/max and external links.
+  * #11 - Validation problem with min/max and external links
   * #13 - Gracefully handle when the recycling bin is chosen
 
 # 1.0.0
@@ -73,7 +72,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
 
   * Upgraded to Umbraco v7.1.2
-  * Removed Pick multiple items field
+  * Removed 'Pick multiple items' field
 
 # 0.2.0
 ### Features

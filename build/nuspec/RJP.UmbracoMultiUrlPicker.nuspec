@@ -1,24 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata>
-    <id>RJP.UmbracoMultiUrlPicker</id>
-    <version>$version$</version>
-    <title>Umbraco Multi Url Picker</title>
-    <authors>Rasmus John Pedersen</authors>
-    <owners>Rasmus John Pedersen</owners>
-    <licenseUrl>https://github.com/rasmusjp/umbraco-multi-url-picker/raw/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/rasmusjp/umbraco-multi-url-picker</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Allows editors to pick and sort multiple urls, it uses Umbraco's link picker which supports internal and external links and media.</description>
-    <releaseNotes />
-    <copyright>Copyright 2014 Rasmus John Pedersen</copyright>
-    <tags>umbraco, urlpicker, multiurlpicker</tags>
-    <dependencies>
-      <dependency id="UmbracoCms.Core" version="[7.6.0, 8.0.0)"/>
-    </dependencies>
+    <metadata>
+        <id>RJP.UmbracoMultiUrlPicker</id>
+        <version>$version$</version>
+        <title>Umbraco Multi URL Picker</title>
+        <authors>Rasmus John Pedersen</authors>
+        <owners>Rasmus John Pedersen</owners>
+        <licenseUrl>https://github.com/rasmusjp/umbraco-multi-url-picker/raw/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/rasmusjp/umbraco-multi-url-picker</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Allows editors to pick and sort multiple URLs, it uses Umbraco's link picker which supports internal and external links and media.</description>
+        <releaseNotes />
+        <copyright>Copyright 2014 Rasmus John Pedersen</copyright>
+        <tags>umbraco, urlpicker, multiurlpicker</tags>
+        <dependencies>
+            <dependency id="UmbracoCms.Core" version="[7.6.0, 8.0.0)"/>
+        </dependencies>
     </metadata>
     <files>
-      <file src="..\..\artifacts\RJP.MultiUrlPicker\RJP.MultiUrlPicker.dll" target="lib\net45" />
-      <file src="..\..\src\RJP.MultiUrlPicker.Web.UI\**\*" target="content\App_Plugins\RJP.MultiUrlPicker" />
+        <file src="..\..\artifacts\RJP.MultiUrlPicker\RJP.MultiUrlPicker.dll" target="lib\net45" />
+        <file src="..\..\src\RJP.MultiUrlPicker.Web.UI\**\*" target="content\App_Plugins\RJP.MultiUrlPicker" />
     </files>
 </package>

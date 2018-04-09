@@ -1,33 +1,28 @@
-using Umbraco.Core.Logging;
-using Umbraco.Core.PropertyEditors.ValueConverters;
-
 namespace RJP.MultiUrlPicker
 {
     using System;
-    using System.Linq;
     using System.Collections.Generic;
-
+    using System.Linq;
+    using Models;
     using Newtonsoft.Json.Linq;
-
     using Umbraco.Core;
+    using Umbraco.Core.Logging;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Core.PropertyEditors;
     using Umbraco.Core.Services;
 
-    using Models;
-
     public class MultiUrlPickerValueConverter : PropertyValueConverterBase, IPropertyValueConverterMeta
     {
         private readonly IDataTypeService _dataTypeService;
 
+        public MultiUrlPickerValueConverter()
+            : this(ApplicationContext.Current.Services.DataTypeService)
+        { }
+
         public MultiUrlPickerValueConverter(IDataTypeService dataTypeService)
         {
             _dataTypeService = dataTypeService;
-        }
-
-        public MultiUrlPickerValueConverter() : this(ApplicationContext.Current.Services.DataTypeService)
-        {
         }
 
         public override bool IsConverter(PublishedPropertyType propertyType)
@@ -37,22 +32,24 @@ namespace RJP.MultiUrlPicker
 
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
         {
-            if (string.IsNullOrWhiteSpace(source?.ToString()))
+            var sourceStr = source?.ToString();
+            if (string.IsNullOrWhiteSpace(sourceStr))
             {
                 return null;
             }
 
-            if (source.ToString().Trim().StartsWith("["))
+            if (sourceStr.Trim().StartsWith("["))
             {
                 try
                 {
-                    return JArray.Parse(source.ToString());
+                    return JArray.Parse(sourceStr);
                 }
                 catch (Exception ex)
                 {
                     LogHelper.Error<MultiUrlPickerValueConverter>("Error parsing JSON", ex);
                 }
             }
+
             return null;
         }
 
@@ -65,14 +62,16 @@ namespace RJP.MultiUrlPicker
             }
 
             var urls = new MultiUrls((JArray)source);
-            if(isMultiple)
+            if (isMultiple)
             {
-                if(maxNumberOfItems > 0)
+                if (maxNumberOfItems > 0)
                 {
                     return urls.Take(maxNumberOfItems);
                 }
+
                 return urls;
             }
+
             return urls.FirstOrDefault();
         }
 
@@ -82,6 +81,7 @@ namespace RJP.MultiUrlPicker
             {
                 return typeof(IEnumerable<Link>);
             }
+
             return typeof(Link);
         }
 
@@ -101,20 +101,15 @@ namespace RJP.MultiUrlPicker
 
         private bool IsMultipleDataType(int dataTypeId, out int maxNumberOfItems)
         {
-            IDictionary<string, PreValue> preValues = _dataTypeService
-                .GetPreValuesCollectionByDataTypeId(dataTypeId)
-                .PreValuesAsDictionary;
+            var preValues = _dataTypeService.GetPreValuesCollectionByDataTypeId(dataTypeId).FormatAsDictionary();
 
             if (preValues.TryGetValue("maxNumberOfItems", out PreValue maxNumberOfItemsPreValue) &&
                 int.TryParse(maxNumberOfItemsPreValue.Value, out maxNumberOfItems))
             {
-                PreValue versionPreValue;
-                Version version;
-                // for backwards compatibility, always return true if version
-                // is less than 2.0.0
-                if (preValues.TryGetValue("version", out versionPreValue) &&
-                    Version.TryParse(versionPreValue.Value, out version)
-                    && version >= new Version(2, 0, 0))
+                // For backwards compatibility, always return true if version is less than 2.0.0
+                if (preValues.TryGetValue("version", out PreValue versionPreValue) &&
+                    Version.TryParse(versionPreValue.Value, out Version version) &&
+                    version >= new Version(2, 0, 0))
                 {
                     return maxNumberOfItems != 1;
                 }
