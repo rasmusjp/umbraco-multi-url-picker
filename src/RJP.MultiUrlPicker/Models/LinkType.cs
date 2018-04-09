@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     public enum LinkType
     {
