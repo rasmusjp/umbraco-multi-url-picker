@@ -1,4 +1,4 @@
-﻿<div ng-controller="RJP.MultiUrlPickerController as ctrl" class="umb-editor umb-contentpicker">
+<div ng-controller="RJP.MultiUrlPickerController as ctrl" class="umb-editor umb-contentpicker">
     <ng-form name="multiUrlPickerForm">
         <div ui-sortable="ctrl.sortableOptions" ng-model="ctrl.renderModel">
             <div ng-repeat="link in ctrl.renderModel">
@@ -17,7 +17,6 @@
 
         <a ng-show="!model.config.maxNumberOfItems || ctrl.renderModel.length < model.config.maxNumberOfItems"
            class="umb-node-preview-add"
-           href
            ng-click="ctrl.openLinkPicker()"
            prevent-default>
             <localize key="general_add">Add</localize>
