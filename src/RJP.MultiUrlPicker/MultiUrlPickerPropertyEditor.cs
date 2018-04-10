@@ -36,6 +36,8 @@ namespace RJP.MultiUrlPicker
             {
                 {"minNumberOfItems", null},
                 {"maxNumberOfItems", null},
+                {"hideQuerystring", "0"},
+                {"hideTarget", "0"},
                 {"version", Information.Version.ToString(3)},
             };
         }
@@ -63,6 +65,12 @@ namespace RJP.MultiUrlPicker
 
             [PreValueField("maxNumberOfItems", "Max number of items", "number")]
             public int? MaxNumberOfItems { get; set; }
+
+            [PreValueField("hideQuerystring", "Hide query string input.", "boolean")]
+            public string HideQuerystring { get; set; }
+
+            [PreValueField("hideTarget", "Hide target/open in new window or tab checkbox.", "boolean")]
+            public string HideTarget { get; set; }
 
             [PreValueField("version", "Multi Url Picker version", "hidden", HideLabel = true)]
             public string Version { get; set; }

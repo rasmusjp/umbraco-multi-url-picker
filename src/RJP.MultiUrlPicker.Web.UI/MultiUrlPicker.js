@@ -65,7 +65,8 @@
         view: 'linkpicker',
         currentTarget: target,
         show: true,
-        querystring: true,
+        hideQuerystring: $scope.model.config.hideQuerystring === '1',
+        hideTarget: $scope.model.config.hideTarget === '1',
         submit: function (model) {
           if (model.target.url) {
             if (link) {
@@ -126,7 +127,7 @@
             // Inject the querystring field
             var $markup = $(response.data)
             var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"]')
-            $urlField.after('<umb-control-group label="Query String" ng-if="model.querystring"><input type="text" placeholder="Query String" class="umb-editor umb-textstring" ng-model="model.target.querystring"/></umb-control-group>')
+            $urlField.after('<umb-control-group label="Query string" ng-if="!model.hideQuerystring"><input type="text" placeholder="Query string" class="umb-editor umb-textstring" ng-model="model.target.querystring" /></umb-control-group>');
             response.data = $markup[0]
           }
           return response
