@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker
+namespace RJP.MultiUrlPicker
 {
     using System;
     using System.Reflection;
@@ -12,12 +12,6 @@
             _version = new Lazy<Version>(() => Assembly.GetExecutingAssembly().GetName().Version);
         }
 
-        public static Version Version
-        {
-            get
-            {
-                return _version.Value;
-            }
-        }
+        public static Version Version => _version.Value;
     }
 }

@@ -1,16 +1,16 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System;
-
     using Newtonsoft.Json.Linq;
-
-    using Umbraco.Core.Models;
     using Umbraco.Core;
-
+    using Umbraco.Core.Models;
+    using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
     using Umbraco.Web.Extensions;
-    using Umbraco.Core.Models.PublishedContent;
 
+    /// <summary>
+    /// Represents a link.
+    /// </summary>
     public class Link
     {
         private readonly JToken _linkItem;
@@ -38,7 +38,7 @@
             }
         }
 
-        [Obsolete("Use Udi instead")]
+        [Obsolete("Use Udi instead.")]
         public int? Id
         {
             get
@@ -179,7 +179,7 @@
                 {
                     var helper = new UmbracoHelper(UmbracoContext.Current);
 
-                    // there were no Udi so let's try the legacy way
+                    // There is no Udi, so let's try the legacy way
                     _id = _linkItem.Value<int?>("id");
 
                     if (_id.HasValue)
@@ -207,18 +207,14 @@
                 Guid? key = _content.GetKey();
                 if (key == Guid.Empty)
                 {
-                    // if the key is Guid.Empty the model might be created by the ModelsBuilder,
-                    // if so it, by default, derives from PublishedContentModel.
-                    // By calling UnWrap() we get the original content, which probably implements
-                    // IPublishedContentWithKey, so we can get the key
+                    // If the key is Guid.Empty, the model might be created by the ModelsBuilder, if so it (by default) derives from PublishedContentModel.
+                    // By calling UnWrap() we get the original content, which probably implements IPublishedContentWithKey, so we can get the key.
                     key = (_content as PublishedContentWrapped)?.Unwrap().GetKey();
                 }
 
                 if (key.HasValue && key != Guid.Empty)
                 {
-                    string udiType = _content.ItemType == PublishedItemType.Media ?
-                        Constants.UdiEntityType.Media :
-                        Constants.UdiEntityType.Document;
+                    string udiType = _content.ItemType == PublishedItemType.Media ? Constants.UdiEntityType.Media : Constants.UdiEntityType.Document;
 
                     _udi = Udi.Create(udiType, key.Value);
                 }

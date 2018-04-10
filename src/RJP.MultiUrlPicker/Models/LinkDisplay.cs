@@ -1,9 +1,11 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System.Runtime.Serialization;
-
     using Umbraco.Core;
 
+    /// <summary>
+    /// Represents a link for displaying in the editor.
+    /// </summary>
     [DataContract]
     internal class LinkDisplay
     {
