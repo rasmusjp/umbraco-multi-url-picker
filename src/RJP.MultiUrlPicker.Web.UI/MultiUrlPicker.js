@@ -68,6 +68,13 @@
         hideQuerystring: $scope.model.config.hideQuerystring === '1',
         hideTarget: $scope.model.config.hideTarget === '1',
         submit: function (model) {
+          // Parse query string: add missing ? or truncate to null
+          var querystring = model.target.querystring || null;
+          if (querystring) {
+            if (querystring[0] !== '?') querystring = '?' + querystring;
+            if (querystring.length === 1) querystring = null;
+          }
+
           if (model.target.url) {
             if (link) {
               if (link.isMedia && link.url === model.target.url) {
@@ -82,7 +89,7 @@
               link.name = model.target.name || model.target.url
               link.target = model.target.target
               link.url = model.target.url
-              link.querystring = model.target.querystring
+              link.querystring = querystring
             } else {
               link = {
                 id: model.target.id,
@@ -91,7 +98,7 @@
                 target: model.target.target,
                 udi: model.target.udi,
                 url: model.target.url,
-                querystring: model.target.querystring
+                querystring: querystring
               }
               this.renderModel.push(link)
             }
