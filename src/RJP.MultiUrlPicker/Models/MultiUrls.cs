@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +8,7 @@
     using Newtonsoft.Json.Linq;
 
     using Umbraco.Core.Logging;
+    using Umbraco.Web;
 
     [Obsolete("Use IEnumerable<Link> instead")]
     public class MultiUrls : IEnumerable<Link>
@@ -48,8 +49,7 @@
                 }
                 else
                 {
-                    LogHelper.Warn<MultiUrls>(
-                        string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
+                    LogHelper.Warn<MultiUrls>("MultiUrlPicker value converter skipped a link, because the node has been upublished/deleted (ID: {0}, URL: {1})", () => newLink.Id, () => UmbracoContext.Current?.PublishedContentRequest?.Uri);
                 }
             }
         }
