@@ -13,7 +13,7 @@
     public class MultiUrls : IEnumerable<Link>
     {
         private readonly string _propertyData;
-        private readonly List<Link> _multiUrls = new List<Link>(); 
+        private readonly List<Link> _multiUrls = new List<Link>();
 
         internal MultiUrls()
         {
@@ -49,7 +49,7 @@
                 else
                 {
                     LogHelper.Warn<MultiUrls>(
-                        string.Format("MultiUrlPicker value converter skipped a link as the node has been upublished/deleted (Id: {0}), ", newLink.Id));
+                        string.Format("MultiUrlPicker value converter skipped a link as the node has been unpublished/deleted (Id: {0}), ", newLink.Id));
                 }
             }
         }
@@ -65,7 +65,7 @@
         // Although this method seems unnecessary it makes .Any() available in Dynamics
         public bool Any()
         {
-            return Enumerable.Any(this);          
+            return Enumerable.Any(this);
         }
 
         public IEnumerator<Link> GetEnumerator()
