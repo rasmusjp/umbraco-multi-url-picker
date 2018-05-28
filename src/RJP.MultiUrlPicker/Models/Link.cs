@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System;
 
@@ -177,14 +177,11 @@
                 }
                 else
                 {
-                    var helper = new UmbracoHelper(UmbracoContext.Current);
-
                     // there were no Udi so let's try the legacy way
                     _id = _linkItem.Value<int?>("id");
-
                     if (_id.HasValue)
                     {
-                        bool isMedia = _linkItem.Value<bool>("isMedia");
+                        var helper = new UmbracoHelper(UmbracoContext.Current);
 
                         if (_linkItem.Value<bool>("isMedia"))
                         {
@@ -194,6 +191,7 @@
                         {
                             _content = helper.TypedContent(_id.Value);
                         }
+
                         SetUdi();
                     }
                 }
