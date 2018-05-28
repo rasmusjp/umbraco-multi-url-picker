@@ -1,4 +1,4 @@
-# Multi Url Picker for Umbraco 7
+# Multi Url Picker for Umbraco 8
 
 [![NuGet release](https://img.shields.io/nuget/v/RJP.UmbracoMultiUrlPicker.svg)](https://www.nuget.org/packages/RJP.UmbracoMultiUrlPicker) 
 [![Our Umbraco project page](https://img.shields.io/badge/our-umbraco-orange.svg)](https://our.umbraco.org/projects/backoffice-extensions/multi-url-picker)

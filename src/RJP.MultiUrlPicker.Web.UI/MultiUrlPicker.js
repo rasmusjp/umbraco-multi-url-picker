@@ -2,6 +2,7 @@
   'use strict'
 
   var MultiUrlPickerController = function ($scope, angularHelper, entityResource, iconHelper) {
+
     this.renderModel = []
 
     if ($scope.preview) {
@@ -126,7 +127,7 @@
             // Inject the querystring field
             var $markup = $(response.data)
             var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"]')
-            $urlField.after('<umb-control-group label="Query String" ng-if="model.querystring"><input type="text" placeholder="Query String" class="umb-editor umb-textstring" ng-model="model.target.querystring"/></umb-control-group>')
+            $urlField.after('<umb-control-group label="Query String" ng-if="model.querystring"><input type="text" placeholder="Query String" class="umb-property-editor umb-textstring" ng-model="model.target.querystring"/></umb-control-group>')
             response.data = $markup[0]
           }
           return response
@@ -136,5 +137,5 @@
   }
 
   angular.module('umbraco').controller('RJP.MultiUrlPickerController', MultiUrlPickerController)
-  angular.module("umbraco.services").config(['$httpProvider', mupHttpProvider]);
+  angular.module('umbraco.services').config(['$httpProvider', mupHttpProvider])
 })()
