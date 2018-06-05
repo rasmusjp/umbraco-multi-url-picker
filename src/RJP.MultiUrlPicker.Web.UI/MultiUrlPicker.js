@@ -65,8 +65,16 @@
         view: 'linkpicker',
         currentTarget: target,
         show: true,
-        querystring: true,
+        hideQuerystring: $scope.model.config.hideQuerystring === '1',
+        hideTarget: $scope.model.config.hideTarget === '1',
         submit: function (model) {
+          // Parse query string: add missing ? or truncate to null
+          var querystring = model.target.querystring || null;
+          if (querystring) {
+            if (querystring[0] !== '?') querystring = '?' + querystring;
+            if (querystring.length === 1) querystring = null;
+          }
+
           if (model.target.url) {
             if (link) {
               if (link.isMedia && link.url === model.target.url) {
@@ -81,7 +89,7 @@
               link.name = model.target.name || model.target.url
               link.target = model.target.target
               link.url = model.target.url
-              link.querystring = model.target.querystring
+              link.querystring = querystring
             } else {
               link = {
                 id: model.target.id,
@@ -90,7 +98,7 @@
                 target: model.target.target,
                 udi: model.target.udi,
                 url: model.target.url,
-                querystring: model.target.querystring
+                querystring: querystring
               }
               this.renderModel.push(link)
             }
@@ -126,7 +134,7 @@
             // Inject the querystring field
             var $markup = $(response.data)
             var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"]')
-            $urlField.after('<umb-control-group label="Query String" ng-if="model.querystring"><input type="text" placeholder="Query String" class="umb-editor umb-textstring" ng-model="model.target.querystring"/></umb-control-group>')
+            $urlField.after('<umb-control-group label="Query string" ng-if="!model.hideQuerystring"><input type="text" placeholder="Query string" class="umb-editor umb-textstring" ng-model="model.target.querystring" /></umb-control-group>');
             response.data = $markup[0]
           }
           return response
