@@ -14,7 +14,7 @@ namespace RJP.MultiUrlPicker.Models
     public class Link
     {
         private readonly JToken _linkItem;
-        private UmbracoHelper _umbracoHelper;
+        private readonly Lazy<UmbracoHelper> _umbracoHelper;
         private bool _publishedContentInitialized = false;
         private string _name;
         private string _url;
@@ -25,10 +25,10 @@ namespace RJP.MultiUrlPicker.Models
         private Udi _udi;
         private int? _id;
 
-        public Link(JToken linkItem, UmbracoHelper umbracoHelper = null)
+        public Link(JToken linkItem, Lazy<UmbracoHelper> umbracoHelper = null)
         {
             _linkItem = linkItem;
-            _umbracoHelper = umbracoHelper;
+            _umbracoHelper = umbracoHelper ?? new Lazy<UmbracoHelper>(() => new UmbracoHelper(UmbracoContext.Current));
         }
 
         private IPublishedContent PublishedContent
@@ -160,8 +160,6 @@ namespace RJP.MultiUrlPicker.Models
             }
         }
 
-        private UmbracoHelper Umbraco => _umbracoHelper ?? (_umbracoHelper = new UmbracoHelper(UmbracoContext.Current));
-
         private void InitPublishedContent()
         {
             if (!_publishedContentInitialized)
@@ -182,12 +180,12 @@ namespace RJP.MultiUrlPicker.Models
                         var mediaAttempt = entityService.GetIdForKey(guidUdi.Guid, umbracoType);
                         if (mediaAttempt.Success)
                         {
-                            _content = Umbraco.TypedMedia(mediaAttempt.Result);
+                            _content = _umbracoHelper.Value.TypedMedia(mediaAttempt.Result);
                         }
                     }
                     else
                     {
-                        _content = Umbraco.TypedContent(guidUdi.Guid);
+                        _content = _umbracoHelper.Value.TypedContent(guidUdi.Guid);
                     }
                     _id = _content?.Id;
                 }
@@ -199,11 +197,11 @@ namespace RJP.MultiUrlPicker.Models
                     {
                         if (_linkItem.Value<bool>("isMedia"))
                         {
-                            _content = Umbraco.TypedMedia(_id.Value);
+                            _content = _umbracoHelper.Value.TypedMedia(_id.Value);
                         }
                         else
                         {
-                            _content = Umbraco.TypedContent(_id.Value);
+                            _content = _umbracoHelper.Value.TypedContent(_id.Value);
                         }
 
                         SetUdi();

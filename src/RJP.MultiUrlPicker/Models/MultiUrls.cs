@@ -40,8 +40,7 @@ namespace RJP.MultiUrlPicker.Models
 
         private void Initialize(JArray data)
         {
-            // Create UmbracoHelper here, because we (probably) need it more than once
-            var umbracoHelper = data.Count > 1 ? new UmbracoHelper(UmbracoContext.Current) : null;
+            var umbracoHelper = new Lazy<UmbracoHelper>(() => new UmbracoHelper(UmbracoContext.Current));
 
             foreach (var item in data)
             {
