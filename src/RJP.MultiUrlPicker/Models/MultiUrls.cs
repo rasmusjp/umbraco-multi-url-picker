@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +8,7 @@
     using Newtonsoft.Json.Linq;
 
     using Umbraco.Core.Logging;
+    using Umbraco.Web;
 
     [Obsolete("Use IEnumerable<Link> instead")]
     public class MultiUrls : IEnumerable<Link>
@@ -39,12 +40,15 @@
 
         private void Initialize(JArray data)
         {
+            // Create UmbracoHelper here, because we (probably) need it more than once
+            var umbracoHelper = data.Count > 1 ? new UmbracoHelper(UmbracoContext.Current) : null;
+
             foreach (var item in data)
             {
-                var newLink = new Link(item);
+                var newLink = new Link(item, umbracoHelper);
                 if (!newLink.Deleted)
                 {
-                    _multiUrls.Add(new Link(item));
+                    _multiUrls.Add(newLink);
                 }
                 else
                 {
