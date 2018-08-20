@@ -1,18 +1,17 @@
 ﻿<div ng-controller="RJP.MultiUrlPickerController as ctrl" class="umb-editor umb-contentpicker">
     <ng-form name="multiUrlPickerForm">
         <div ui-sortable="ctrl.sortableOptions" ng-model="ctrl.renderModel">
-            <div ng-repeat="link in ctrl.renderModel">
-                <umb-node-preview icon="link.icon"
-                                  name="link.name"
-                                  published="link.published"
-                                  description="link.url + (link.querystring ? link.querystring : '')"
-                                  sortable="!ctrl.sortableOptions.disabled"
-                                  allow-remove="true"
-                                  allow-open="true"
-                                  on-remove="ctrl.remove($index)"
-                                  on-open="ctrl.openLinkPicker(link, $index)">
-                </umb-node-preview>
-            </div>
+            <umb-node-preview ng-repeat="link in ctrl.renderModel"
+                              icon="link.icon"
+                              name="link.name"
+                              published="link.published"
+                              description="link.url + (link.querystring ? link.querystring : '')"
+                              sortable="!ctrl.sortableOptions.disabled"
+                              allow-remove="true"
+                              allow-open="true"
+                              on-remove="ctrl.remove($index)"
+                              on-open="ctrl.openLinkPicker(link, $index)">
+            </umb-node-preview>
         </div>
 
         <a ng-show="!model.config.maxNumberOfItems || ctrl.renderModel.length < model.config.maxNumberOfItems"
