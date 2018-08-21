@@ -1,4 +1,4 @@
-(function () {
+; (function () {
   'use strict'
 
   var MultiUrlPickerController = function ($scope, angularHelper, entityResource, iconHelper) {
@@ -56,10 +56,15 @@
         id: link.isMedia ? null : link.id,
         udi: link.isMedia ? null : link.udi,
         url: link.url,
-        querystring: link.querystring,
+        anchor: link.querystring,
         target: link.target
       } : null
 
+      // 7.12.0 and 7.12.1 removes the url in the linkPicker if there's no # or ? at the end
+      // Hopefully this PR https://github.com/umbraco/Umbraco-CMS/pull/2868 will be merged in 7.12.2
+      if (link && link.url && (Umbraco.Sys.ServerVariables.application.version == '7.12.0' || Umbraco.Sys.ServerVariables.application.version == '7.12.1')) {
+        target.url = target.url + '#'
+      }
 
       this.linkPickerOverlay = {
         view: 'linkpicker',
@@ -69,10 +74,10 @@
         hideTarget: $scope.model.config.hideTarget === '1',
         submit: function (model) {
           // Parse query string: add missing ? or truncate to null
-          var querystring = model.target.querystring || null;
+          var querystring = model.target.anchor
           if (querystring) {
-            if (querystring[0] !== '?') querystring = '?' + querystring;
-            if (querystring.length === 1) querystring = null;
+            if (querystring[0] !== '?' && querystring[0] !== '#') querystring = '?' + querystring
+            if (querystring.length === 1) querystring = null
           }
 
           if (model.target.url) {
@@ -107,10 +112,10 @@
               var entityType = link.isMedia ? 'media' : 'document'
 
               entityResource.getById(link.udi, entityType)
-              .then(function (data) {
-                link.icon = iconHelper.convertFromLegacyIcon(data.icon)
-                link.published = !(data.metaData && data.metaData.IsPublished === false && entityType === 'document')
-              })
+                .then(function (data) {
+                  link.icon = iconHelper.convertFromLegacyIcon(data.icon)
+                  link.published = !(data.metaData && data.metaData.IsPublished === false && entityType === 'document')
+                })
             } else {
               link.published = true
               link.icon = 'icon-link'
@@ -133,9 +138,13 @@
           if (response.config.url.indexOf('views/common/overlays/linkpicker/linkpicker.html') !== -1) {
             // Inject the querystring field
             var $markup = $(response.data)
-            var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"]')
-            $urlField.after('<umb-control-group label="Query string" ng-if="!model.hideQuerystring"><input type="text" placeholder="Query string" class="umb-editor umb-textstring" ng-model="model.target.querystring" /></umb-control-group>');
-            response.data = $markup[0]
+            var $anchorField = $markup.find('[label="@defaultdialogs_anchorLinkPicker"]')
+            // Umbraco 7.12 added it's own anchor/querystring field, so only inject if it doesn't exist
+            if (!$anchorField.length) {
+              var $urlField = $markup.find('[label="@defaultdialogs_urlLinkPicker"],[label="@content_urls"]')
+              $urlField.after('<umb-control-group label="Query string" ng-if="!model.hideQuerystring"><input type="text" placeholder="Query string" class="umb-editor umb-textstring" ng-model="model.target.anchor" /></umb-control-group>')
+              response.data = $markup[0]
+            }
           }
           return response
         }
@@ -144,5 +153,5 @@
   }
 
   angular.module('umbraco').controller('RJP.MultiUrlPickerController', MultiUrlPickerController)
-  angular.module("umbraco.services").config(['$httpProvider', mupHttpProvider]);
+    .config(['$httpProvider', mupHttpProvider])
 })()

@@ -21,11 +21,12 @@ namespace RJP.MultiUrlPicker
     using Models;
 
     using Constants = Umbraco.Core.Constants;
+    using Umbraco.Core.Configuration;
 
     [PropertyEditorAsset(ClientDependencyType.Javascript, "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.js")]
     [PropertyEditor("RJP.MultiUrlPicker", "Multi Url Picker", "JSON",
         "~/App_Plugins/RJP.MultiUrlPicker/MultiUrlPicker.html",
-        Group ="pickers", Icon = "icon-link", IsParameterEditor = true)]
+        Group = "pickers", Icon = "icon-link", IsParameterEditor = true)]
     public class MultiUrlPickerPropertyEditor : PropertyEditor
     {
         private IDictionary<string, object> _defaultPreValues;
@@ -60,25 +61,54 @@ namespace RJP.MultiUrlPicker
 
         private class MultiUrlPickerPreValueEditor : PreValueEditor
         {
-            [PreValueField("minNumberOfItems", "Min number of items", "number")]
-            public int? MinNumberOfItems { get; set; }
+            public MultiUrlPickerPreValueEditor()
+            {
+                Fields.AddRange(new[]
+                {
+                    new PreValueField
+                    {
+                        Key = "minNumberOfItems",
+                        Name = "Min number of items",
+                        View = "number"
+                    },
+                    new PreValueField
+                    {
+                        Key = "maxNumberOfItems",
+                        Name = "Max number of items",
+                        View = "number"
+                    },
+                    new PreValueField
+                    {
+                        Key = "hideTarget",
+                        Name = "Hide target/open in new window or tab checkbox",
+                        View = "boolean"
+                    },
+                    new PreValueField
+                    {
+                        Key = "version",
+                        Name = "Multi Url Picker version",
+                        View = "hidden",
+                        HideLabel = true
+                    }
+                });
 
-            [PreValueField("maxNumberOfItems", "Max number of items", "number")]
-            public int? MaxNumberOfItems { get; set; }
-
-            [PreValueField("hideQuerystring", "Hide query string input.", "boolean")]
-            public string HideQuerystring { get; set; }
-
-            [PreValueField("hideTarget", "Hide target/open in new window or tab checkbox.", "boolean")]
-            public string HideTarget { get; set; }
-
-            [PreValueField("version", "Multi Url Picker version", "hidden", HideLabel = true)]
-            public string Version { get; set; }
+                if (UmbracoVersion.Current < new Version(7, 12, 0))
+                {
+                    // Umbraco 7.12 has it's own query string field which is not possible to hide at the time of writing
+                    // so only add the field in older versions
+                    Fields.Insert(2, new PreValueField
+                    {
+                        Key = "hideQuerystring",
+                        Name = "Hide query string input",
+                        View = "boolean"
+                    });
+                }
+            }
 
             public override IDictionary<string, object> ConvertDbToEditor(IDictionary<string, object> defaultPreVals, PreValueCollection persistedPreVals)
             {
                 // if there isn't a version stored set it to 0 for backwards compatibility
-                if(!persistedPreVals.PreValuesAsDictionary.ContainsKey("version"))
+                if (!persistedPreVals.PreValuesAsDictionary.ContainsKey("version"))
                 {
                     persistedPreVals.PreValuesAsDictionary["version"] = new PreValue("0");
                 }
@@ -97,7 +127,7 @@ namespace RJP.MultiUrlPicker
             {
                 string value = property.Value?.ToString();
 
-                if(string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
                     return Enumerable.Empty<object>();
                 }
@@ -123,7 +153,7 @@ namespace RJP.MultiUrlPicker
                     List<IUmbracoEntity> entities = new List<IUmbracoEntity>();
                     if (documentLinks.Count > 0)
                     {
-                        if(documentLinks[0].Id.HasValue)
+                        if (documentLinks[0].Id.HasValue)
                         {
                             entities.AddRange(
                                 entityService.GetAll(UmbracoObjectTypes.Document, documentLinks.Select(link => link.Id.Value).ToArray())
@@ -137,7 +167,7 @@ namespace RJP.MultiUrlPicker
                         }
                     }
 
-                    if(mediaLinks.Count > 0)
+                    if (mediaLinks.Count > 0)
                     {
                         if (mediaLinks[0].Id.HasValue)
                         {
@@ -154,7 +184,7 @@ namespace RJP.MultiUrlPicker
                     }
 
                     var result = new List<LinkDisplay>();
-                    foreach(LinkDto dto in links)
+                    foreach (LinkDto dto in links)
                     {
                         if (dto.Id.HasValue || dto.Udi != null)
                         {
@@ -176,7 +206,7 @@ namespace RJP.MultiUrlPicker
                             bool published = Equals(entity.AdditionalData["IsPublished"], true);
                             string url = dto.Url;
 
-                            if(string.IsNullOrEmpty(contentTypeAlias))
+                            if (string.IsNullOrEmpty(contentTypeAlias))
                             {
                                 continue;
                             }
@@ -244,7 +274,7 @@ namespace RJP.MultiUrlPicker
                     }
                     return result;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ApplicationContext.Current.ProfilingLogger.Logger.Error<MultiUrlPickerPropertyValueEditor>("Error getting links", ex);
                 }
