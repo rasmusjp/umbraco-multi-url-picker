@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+# 2.2.0
+### Features
+
+  * #83 - Umbraco version 7.12.0 breaks UI
+  * #82 - Moved `ng-repeat` to the `umb-node-preview` directive
+  * Localized validation messages
+  * Added helper messages for min/max number of items
+
 # 2.1.0
 ### Features
 
