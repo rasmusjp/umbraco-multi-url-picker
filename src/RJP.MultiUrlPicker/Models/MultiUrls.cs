@@ -1,4 +1,4 @@
-﻿namespace RJP.MultiUrlPicker.Models
+namespace RJP.MultiUrlPicker.Models
 {
     using System;
     using System.Collections.Generic;
@@ -48,8 +48,7 @@
                 }
                 else
                 {
-                    LogHelper.Warn<MultiUrls>(
-                        string.Format("MultiUrlPicker value converter skipped a link as the node has been unpublished/deleted (Id: {0}), ", newLink.Id));
+                    LogHelper.Info<MultiUrls>("Skipped link as the node has been unpublished/deleted (UDI: {0})", () => newLink.Udi);
                 }
             }
         }
