@@ -55,7 +55,7 @@
         // the linkPicker breaks if it get an id or udi for media
         id: link.isMedia ? null : link.id,
         udi: link.isMedia ? null : link.udi,
-        url: link.url,
+        url: link.url || '',
         anchor: link.querystring,
         target: link.target
       } : null
@@ -80,7 +80,7 @@
             if (querystring.length === 1) querystring = null
           }
 
-          if (model.target.url) {
+          if (model.target.url || querystring) {
             if (link) {
               if (link.isMedia && link.url === model.target.url) {
                 // we can assume the existing media item is changed and no new file has been selected
@@ -91,15 +91,15 @@
                 link.isMedia = model.target.isMedia
               }
 
-              link.name = model.target.name || model.target.url
+              link.name = model.target.name || model.target.url || querystring
               link.target = model.target.target
-              link.url = model.target.url
+              link.url = model.target.url || ''
               link.querystring = querystring
             } else {
               link = {
                 id: model.target.id,
                 isMedia: model.target.isMedia,
-                name: model.target.name || model.target.url,
+                name: model.target.name || model.target.url || querystring,
                 target: model.target.target,
                 udi: model.target.udi,
                 url: model.target.url,
