@@ -37,22 +37,24 @@ namespace RJP.MultiUrlPicker
 
         public override object ConvertDataToSource(PublishedPropertyType propertyType, object source, bool preview)
         {
-            if (string.IsNullOrWhiteSpace(source?.ToString()))
+            var sourceString = source?.ToString();
+            if (string.IsNullOrWhiteSpace(sourceString))
             {
                 return null;
             }
 
-            if (source.ToString().Trim().StartsWith("["))
+            if (sourceString.DetectIsJson())
             {
                 try
                 {
-                    return JArray.Parse(source.ToString());
+                    return JArray.Parse(sourceString);
                 }
                 catch (Exception ex)
                 {
                     LogHelper.Error<MultiUrlPickerValueConverter>("Error parsing JSON", ex);
                 }
             }
+
             return null;
         }
 
@@ -65,14 +67,16 @@ namespace RJP.MultiUrlPicker
             }
 
             var urls = new MultiUrls((JArray)source);
-            if(isMultiple)
+            if (isMultiple)
             {
-                if(maxNumberOfItems > 0)
+                if (maxNumberOfItems > 0)
                 {
                     return urls.Take(maxNumberOfItems);
                 }
+
                 return urls;
             }
+
             return urls.FirstOrDefault();
         }
 
@@ -82,6 +86,7 @@ namespace RJP.MultiUrlPicker
             {
                 return typeof(IEnumerable<Link>);
             }
+
             return typeof(Link);
         }
 
@@ -108,12 +113,9 @@ namespace RJP.MultiUrlPicker
             if (preValues.TryGetValue("maxNumberOfItems", out PreValue maxNumberOfItemsPreValue) &&
                 int.TryParse(maxNumberOfItemsPreValue.Value, out maxNumberOfItems))
             {
-                PreValue versionPreValue;
-                Version version;
-                // for backwards compatibility, always return true if version
-                // is less than 2.0.0
-                if (preValues.TryGetValue("version", out versionPreValue) &&
-                    Version.TryParse(versionPreValue.Value, out version)
+                // For backwards compatibility, always return true if version is less than 2.0.0
+                if (preValues.TryGetValue("version", out PreValue versionPreValue) &&
+                    Version.TryParse(versionPreValue.Value, out Version version)
                     && version >= new Version(2, 0, 0))
                 {
                     return maxNumberOfItems != 1;

@@ -14,6 +14,7 @@ namespace RJP.MultiUrlPicker.Models
     public class Link
     {
         private readonly JToken _linkItem;
+        private readonly Lazy<UmbracoHelper> _umbracoHelper;
         private bool _publishedContentInitialized = false;
         private string _name;
         private string _url;
@@ -24,9 +25,10 @@ namespace RJP.MultiUrlPicker.Models
         private Udi _udi;
         private int? _id;
 
-        public Link(JToken linkItem)
+        public Link(JToken linkItem, Lazy<UmbracoHelper> umbracoHelper = null)
         {
             _linkItem = linkItem;
+            _umbracoHelper = umbracoHelper ?? new Lazy<UmbracoHelper>(() => new UmbracoHelper(UmbracoContext.Current));
         }
 
         private IPublishedContent PublishedContent
@@ -158,7 +160,6 @@ namespace RJP.MultiUrlPicker.Models
             }
         }
 
-
         private void InitPublishedContent()
         {
             if (!_publishedContentInitialized)
@@ -170,9 +171,22 @@ namespace RJP.MultiUrlPicker.Models
                     return;
                 }
 
-                if (Udi.TryParse(_linkItem.Value<string>("udi"), out _udi))
+                if (Udi.TryParse(_linkItem.Value<string>("udi"), out _udi) && _udi is GuidUdi guidUdi)
                 {
-                    _content = _udi.ToPublishedContent();
+                    var umbracoType = Constants.UdiEntityType.ToUmbracoObjectType(_udi.EntityType);
+                    if (umbracoType == UmbracoObjectTypes.Media)
+                    {
+                        var entityService = ApplicationContext.Current.Services.EntityService;
+                        var mediaAttempt = entityService.GetIdForKey(guidUdi.Guid, umbracoType);
+                        if (mediaAttempt.Success)
+                        {
+                            _content = _umbracoHelper.Value.TypedMedia(mediaAttempt.Result);
+                        }
+                    }
+                    else
+                    {
+                        _content = _umbracoHelper.Value.TypedContent(guidUdi.Guid);
+                    }
                     _id = _content?.Id;
                 }
                 else
@@ -181,15 +195,13 @@ namespace RJP.MultiUrlPicker.Models
                     _id = _linkItem.Value<int?>("id");
                     if (_id.HasValue)
                     {
-                        var helper = new UmbracoHelper(UmbracoContext.Current);
-
                         if (_linkItem.Value<bool>("isMedia"))
                         {
-                            _content = helper.TypedMedia(_id.Value);
+                            _content = _umbracoHelper.Value.TypedMedia(_id.Value);
                         }
                         else
                         {
-                            _content = helper.TypedContent(_id.Value);
+                            _content = _umbracoHelper.Value.TypedContent(_id.Value);
                         }
 
                         SetUdi();
